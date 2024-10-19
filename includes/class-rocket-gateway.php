@@ -77,8 +77,15 @@ class WC_Gateway_rocket extends WC_Payment_Gateway {
 
     // Payment fields
     public function payment_fields() {
+
+        // Translators: %1$s is the total payment amount. %2$s is the Rocket fees amount.
         echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_rocket_fees())) . '</p>';
         echo '<p>' . esc_html($this->description) . '</p>';
+
+        // Show Account Type and Number
+        echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+
+        echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
         
         echo '<div>
                 <label for="rocket_phone">' . esc_html__('rocket Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
@@ -110,69 +117,85 @@ class WC_Gateway_rocket extends WC_Payment_Gateway {
         return number_format($rocket_fee, 2) . ' BDT';
     }
 
-    // Validate rocket fields (checkout)
-    public function validate_fields() {
-        if (isset($_POST['rocket_nonce'])) {
-            $nonce = sanitize_text_field(wp_unslash($_POST['rocket_nonce']));
-            if (!wp_verify_nonce($nonce, 'rocket_payment_nonce')) {
-                wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
-                return false;
-            }
-        } else {
-            wc_add_notice(__('Nonce is missing.', 'bangladeshi-payments-mobile'), 'error');
-            return false;
-        }
-
-        if (isset($_POST['rocket_phone'])) {
-            $rocket_phone = sanitize_text_field(wp_unslash($_POST['rocket_phone']));
-            if (empty($rocket_phone) || !preg_match('/^01[0-9]{9}$/', $rocket_phone)) {
-                wc_add_notice(__('Please enter a valid rocket phone number.', 'bangladeshi-payments-mobile'), 'error');
-                return false;
-            }
-        } else {
-            wc_add_notice(__('Rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
-            return false;
-        }
-
-        if (isset($_POST['rocket_transaction_id'])) {
-            $rocket_transaction_id = sanitize_text_field(wp_unslash($_POST['rocket_transaction_id']));
-            if (empty($rocket_transaction_id)) {
-                wc_add_notice(__('Please enter your rocket transaction ID.', 'bangladeshi-payments-mobile'), 'error');
-                return false;
-            }
-        } else {
-            wc_add_notice(__('Rocket transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
-            return false;
-        }
-
-        return true;
-    }
-
-    // Process the payment (checkout)
-    public function process_payment($order_id) {
-        if (!isset($_POST['rocket_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['rocket_nonce'])), 'rocket_payment_nonce')) {
+    // Validate rocket fields (checkout)// Validate rocket fields (checkout)
+public function validate_fields() {
+    if (isset($_POST['rocket_nonce'])) {
+        $nonce = sanitize_text_field(wp_unslash($_POST['rocket_nonce']));
+        if (!wp_verify_nonce($nonce, 'rocket_payment_nonce')) {
             wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
-
-        $rocket_phone = sanitize_text_field(wp_unslash($_POST['rocket_phone']));
-        $rocket_transaction_id = sanitize_text_field(wp_unslash($_POST['rocket_transaction_id']));
-
-        $order = wc_get_order($order_id);
-        
-        update_post_meta($order_id, '_rocket_phone', $rocket_phone);
-        update_post_meta($order_id, '_rocket_transaction_id', $rocket_transaction_id);
-        
-        $order->update_status('on-hold', __('Waiting for rocket payment confirmation.', 'bangladeshi-payments-mobile'));
-
-        wc_reduce_stock_levels($order_id);
-        WC()->cart->empty_cart();
-
-        return array(
-            'result' => 'success',
-            'redirect' => $this->get_return_url($order),
-        );
+    } else {
+        wc_add_notice(__('Nonce is missing.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
     }
+
+    // Check for rocket phone number
+    if (isset($_POST['rocket_phone']) && !empty($_POST['rocket_phone'])) {
+        $rocket_phone = sanitize_text_field(wp_unslash($_POST['rocket_phone']));
+        if (!preg_match('/^01[0-9]{9}$/', $rocket_phone)) {
+            wc_add_notice(__('Please enter a valid rocket phone number.', 'bangladeshi-payments-mobile'), 'error');
+            return false;
+        }
+    } else {
+        wc_add_notice(__('Rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    // Check for rocket transaction ID
+    if (isset($_POST['rocket_transaction_id']) && !empty($_POST['rocket_transaction_id'])) {
+        $rocket_transaction_id = sanitize_text_field(wp_unslash($_POST['rocket_transaction_id']));
+        if (empty($rocket_transaction_id)) {
+            wc_add_notice(__('Please enter your rocket transaction ID.', 'bangladeshi-payments-mobile'), 'error');
+            return false;
+        }
+    } else {
+        wc_add_notice(__('Rocket transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    return true;
+}
+
+// Process the payment (checkout)
+public function process_payment($order_id) {
+    if (!isset($_POST['rocket_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['rocket_nonce'])), 'rocket_payment_nonce')) {
+        wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    // Check for rocket phone number
+    if (isset($_POST['rocket_phone'])) {
+        $rocket_phone = sanitize_text_field(wp_unslash($_POST['rocket_phone']));
+    } else {
+        wc_add_notice(__('Rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    // Check for rocket transaction ID
+    if (isset($_POST['rocket_transaction_id'])) {
+        $rocket_transaction_id = sanitize_text_field(wp_unslash($_POST['rocket_transaction_id']));
+    } else {
+        wc_add_notice(__('Rocket transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    $order = wc_get_order($order_id);
+    
+    update_post_meta($order_id, '_rocket_phone', $rocket_phone);
+    update_post_meta($order_id, '_rocket_transaction_id', $rocket_transaction_id);
+    
+    $order->update_status('on-hold', __('Waiting for rocket payment confirmation.', 'bangladeshi-payments-mobile'));
+
+    wc_reduce_stock_levels($order_id);
+    WC()->cart->empty_cart();
+
+    return array(
+        'result' => 'success',
+        'redirect' => $this->get_return_url($order),
+    );
+}
+
 
     // Display rocket information on the order page
     public function display_rocket_info_on_order($order_id) {

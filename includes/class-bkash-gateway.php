@@ -77,8 +77,15 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
 
     // Payment fields
     public function payment_fields() {
-        echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_bkash_fees())) . '</p>';
-        echo '<p>' . esc_html($this->description) . '</p>';
+        // Translators: %1$s is the total payment amount. %2$s is the Bkash fees amount.
+echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_bkash_fees())) . '</p>';
+echo '<p>' . esc_html($this->description) . '</p>';
+
+
+        // Show Account Type and Number
+        echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+
+        echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
         
         echo '<div>
                 <label for="bkash_phone">' . esc_html__('bKash Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
@@ -111,6 +118,7 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
     }
 
     // Validate bKash fields (checkout)
+// Validate bkash fields (checkout)
 public function validate_fields() {
     if (isset($_POST['bkash_nonce'])) {
         $nonce = sanitize_text_field(wp_unslash($_POST['bkash_nonce']));
@@ -123,25 +131,27 @@ public function validate_fields() {
         return false;
     }
 
-    if (isset($_POST['bkash_phone'])) {
+    // Check for bkash phone number
+    if (isset($_POST['bkash_phone']) && !empty($_POST['bkash_phone'])) {
         $bkash_phone = sanitize_text_field(wp_unslash($_POST['bkash_phone']));
-        if (empty($bkash_phone) || !preg_match('/^01[0-9]{9}$/', $bkash_phone)) {
-            wc_add_notice(__('Please enter a valid bKash phone number.', 'bangladeshi-payments-mobile'), 'error');
+        if (!preg_match('/^01[0-9]{9}$/', $bkash_phone)) {
+            wc_add_notice(__('Please enter a valid bkash phone number.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('bKash phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('bkash phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
-    if (isset($_POST['bkash_transaction_id'])) {
+    // Check for bkash transaction ID
+    if (isset($_POST['bkash_transaction_id']) && !empty($_POST['bkash_transaction_id'])) {
         $bkash_transaction_id = sanitize_text_field(wp_unslash($_POST['bkash_transaction_id']));
         if (empty($bkash_transaction_id)) {
-            wc_add_notice(__('Please enter your bKash transaction ID.', 'bangladeshi-payments-mobile'), 'error');
+            wc_add_notice(__('Please enter your bkash transaction ID.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('bKash transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('bkash transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -155,15 +165,28 @@ public function process_payment($order_id) {
         return false;
     }
 
-    $bkash_phone = sanitize_text_field(wp_unslash($_POST['bkash_phone']));
-    $bkash_transaction_id = sanitize_text_field(wp_unslash($_POST['bkash_transaction_id']));
+    // Check for bkash phone number
+    if (isset($_POST['bkash_phone'])) {
+        $bkash_phone = sanitize_text_field(wp_unslash($_POST['bkash_phone']));
+    } else {
+        wc_add_notice(__('bkash phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    // Check for bkash transaction ID
+    if (isset($_POST['bkash_transaction_id'])) {
+        $bkash_transaction_id = sanitize_text_field(wp_unslash($_POST['bkash_transaction_id']));
+    } else {
+        wc_add_notice(__('bkash transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
 
     $order = wc_get_order($order_id);
     
     update_post_meta($order_id, '_bkash_phone', $bkash_phone);
     update_post_meta($order_id, '_bkash_transaction_id', $bkash_transaction_id);
     
-    $order->update_status('on-hold', __('Waiting for bKash payment confirmation.', 'bangladeshi-payments-mobile'));
+    $order->update_status('on-hold', __('Waiting for bkash payment confirmation.', 'bangladeshi-payments-mobile'));
 
     wc_reduce_stock_levels($order_id);
     WC()->cart->empty_cart();
@@ -173,6 +196,7 @@ public function process_payment($order_id) {
         'redirect' => $this->get_return_url($order),
     );
 }
+
 
 
     // Display bKash information on the order page

@@ -77,8 +77,17 @@ class WC_Gateway_nagad extends WC_Payment_Gateway {
 
     // Payment fields
     public function payment_fields() {
+
+        // Translators: %1$s is the total payment amount. %2$s is the Nagad fees amount.
         echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_nagad_fees())) . '</p>';
         echo '<p>' . esc_html($this->description) . '</p>';
+
+
+       // Show Account Type and Number
+       echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+
+       echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
+
         
         echo '<div>
                 <label for="nagad_phone">' . esc_html__('Nagad Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
@@ -110,6 +119,7 @@ class WC_Gateway_nagad extends WC_Payment_Gateway {
         return number_format($nagad_fee, 2) . ' BDT';
     }
 // Validate nagad fields (checkout)
+// Validate nagad fields (checkout)
 public function validate_fields() {
     if (isset($_POST['nagad_nonce'])) {
         $nonce = sanitize_text_field(wp_unslash($_POST['nagad_nonce']));
@@ -122,25 +132,27 @@ public function validate_fields() {
         return false;
     }
 
-    if (isset($_POST['nagad_phone'])) {
+    // Check for nagad phone number
+    if (isset($_POST['nagad_phone']) && !empty($_POST['nagad_phone'])) {
         $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
-        if (empty($nagad_phone) || !preg_match('/^01[0-9]{9}$/', $nagad_phone)) {
+        if (!preg_match('/^01[0-9]{9}$/', $nagad_phone)) {
             wc_add_notice(__('Please enter a valid nagad phone number.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('Nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
-    if (isset($_POST['nagad_transaction_id'])) {
+    // Check for nagad transaction ID
+    if (isset($_POST['nagad_transaction_id']) && !empty($_POST['nagad_transaction_id'])) {
         $nagad_transaction_id = sanitize_text_field(wp_unslash($_POST['nagad_transaction_id']));
         if (empty($nagad_transaction_id)) {
             wc_add_notice(__('Please enter your nagad transaction ID.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
     } else {
-        wc_add_notice(__('Nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -149,30 +161,43 @@ public function validate_fields() {
 
 // Process the payment (checkout)
 public function process_payment($order_id) {
-    if (isset($_POST['nagad_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nagad_nonce'])), 'nagad_payment_nonce')) {
-
-        $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
-        $nagad_transaction_id = sanitize_text_field(wp_unslash($_POST['nagad_transaction_id']));
-
-        $order = wc_get_order($order_id);
-        
-        update_post_meta($order_id, '_nagad_phone', $nagad_phone);
-        update_post_meta($order_id, '_nagad_transaction_id', $nagad_transaction_id);
-        
-        $order->update_status('on-hold', __('Waiting for nagad payment confirmation.', 'bangladeshi-payments-mobile'));
-
-        wc_reduce_stock_levels($order_id);
-        WC()->cart->empty_cart();
-
-        return array(
-            'result' => 'success',
-            'redirect' => $this->get_return_url($order),
-        );
-    } else {
+    if (!isset($_POST['nagad_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nagad_nonce'])), 'nagad_payment_nonce')) {
         wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
+
+    // Check for nagad phone number
+    if (isset($_POST['nagad_phone'])) {
+        $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
+    } else {
+        wc_add_notice(__('nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    // Check for nagad transaction ID
+    if (isset($_POST['nagad_transaction_id'])) {
+        $nagad_transaction_id = sanitize_text_field(wp_unslash($_POST['nagad_transaction_id']));
+    } else {
+        wc_add_notice(__('nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        return false;
+    }
+
+    $order = wc_get_order($order_id);
+    
+    update_post_meta($order_id, '_nagad_phone', $nagad_phone);
+    update_post_meta($order_id, '_nagad_transaction_id', $nagad_transaction_id);
+    
+    $order->update_status('on-hold', __('Waiting for nagad payment confirmation.', 'bangladeshi-payments-mobile'));
+
+    wc_reduce_stock_levels($order_id);
+    WC()->cart->empty_cart();
+
+    return array(
+        'result' => 'success',
+        'redirect' => $this->get_return_url($order),
+    );
 }
+
 
 
     // Display nagad information on the order page

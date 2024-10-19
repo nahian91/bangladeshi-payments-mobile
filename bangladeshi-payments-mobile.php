@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Bangladeshi Payments for Mobile
+ * Plugin Name: Bangladeshi Payments Mobile
  * Plugin URI: https://devnahian.com/bangladeshi-payments-mobile/
  * Description: Bangladeshi Payments Mobile is a WooCommerce payment gateway that enables seamless mobile payments with bKash, Nagad, Rocket, and Upay for online stores.
  * Version: 1.0.1
@@ -41,7 +41,7 @@ function bangladeshi_payments_check_woocommerce() {
 
 // Show an admin notice if WooCommerce is not installed or activated
 function bangladeshi_payments_woocommerce_missing_notice() {
-    echo '<div class="error"><p>' . esc_html__('Bangladeshi Payments for Mobile requires WooCommerce to be installed and active.', 'bangladeshi-payments-mobile') . '</p></div>';
+    echo '<div class="error"><p>' . esc_html__('Bangladeshi Payments Mobile requires WooCommerce to be installed and active.', 'bangladeshi-payments-mobile') . '</p></div>';
 }
 
 // Add the payment gateway to WooCommerce
