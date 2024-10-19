@@ -1,0 +1,35 @@
+
+.payment_box {
+    padding: 0 !important;
+    background-color: #f4f4f4;
+    padding: 15px !important;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+  }
+  .payment_box input {
+    display: block;
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 5px;
+  }
+  .payment_box div {
+    margin-top: 15px;
+  }
+  .payment_box label {
+    margin-bottom: 5px !important;
+  }
+  
+.paymen-order-page {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+.paymen-order-page h3, .paymen-order-page p {
+  margin: 0 !important;
+}
+.paymen-order-page p {
+  margin: 15px 0 !important;
+}
+.paymen-order-page p:last-child {
+  margin-bottom: 0 !important;
+}
