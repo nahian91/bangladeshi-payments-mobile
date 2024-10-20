@@ -26,100 +26,113 @@ class WC_Gateway_nagad extends WC_Payment_Gateway {
     }
 
     // Admin settings fields
-    public function init_form_fields() {
-        $this->form_fields = array(
-            'enabled' => array(
-                'title' => __('Enable/Disable', 'bangladeshi-payments-mobile'),
-                'type' => 'checkbox',
-                'label' => __('Enable Nagad Payment', 'bangladeshi-payments-mobile'),
-                'default' => 'yes',
+public function init_form_fields() {
+    $this->form_fields = array(
+        'enabled' => array(
+            'title' => __('Enable/Disable', 'bangladeshi-payments-mobile'),
+            'type' => 'checkbox',
+            'label' => __('Enable Nagad Payment', 'bangladeshi-payments-mobile'),
+            'default' => 'yes',
+        ),
+        'title' => array(
+            'title' => __('Title', 'bangladeshi-payments-mobile'),
+            'type' => 'text',
+            'description' => __('This controls the title the user sees during checkout.', 'bangladeshi-payments-mobile'),
+            'default' => __('Nagad Payment', 'bangladeshi-payments-mobile'),
+            'desc_tip' => true,
+        ),
+        'description' => array(
+            'title' => __('Description', 'bangladeshi-payments-mobile'),
+            'type' => 'textarea',
+            'description' => __('Payment method description that the customer will see during checkout.', 'bangladeshi-payments-mobile'),
+            'default' => __('Pay with nagad. Enter your nagad phone number and transaction ID.', 'bangladeshi-payments-mobile'),
+        ),
+        'account_type' => array(
+            'title' => __('Account Type', 'bangladeshi-payments-mobile'),
+            'type' => 'select',
+            'options' => array(
+                'personal' => __('Personal', 'bangladeshi-payments-mobile'),
+                'agent' => __('Agent', 'bangladeshi-payments-mobile'),
             ),
-            'title' => array(
-                'title' => __('Title', 'bangladeshi-payments-mobile'),
-                'type' => 'text',
-                'description' => __('This controls the title the user sees during checkout.', 'bangladeshi-payments-mobile'),
-                'default' => __('Nagad Payment', 'bangladeshi-payments-mobile'),
-                'desc_tip' => true,
+            'description' => __('Select the type of account used for nagad transactions.', 'bangladeshi-payments-mobile'),
+            'default' => 'personal',
+        ),
+        'account_number' => array(
+            'title' => __('Account Number', 'bangladeshi-payments-mobile'),
+            'type' => 'text',
+            'description' => __('Enter the account number for nagad transactions.', 'bangladeshi-payments-mobile'),
+            'default' => '',
+        ),
+        'apply_nagad_charge' => array(
+            'title' => __('Apply Nagad Charge', 'bangladeshi-payments-mobile'),
+            'type' => 'checkbox',
+            'label' => __('Apply Nagad charge to total payment?', 'bangladeshi-payments-mobile'),
+            'default' => 'yes',
+        ),
+        'nagad_charge' => array(
+            'title' => __('Nagad Charge (%)', 'bangladeshi-payments-mobile'),
+            'type' => 'number',
+            'description' => __('Enter the nagad charge as a percentage (e.g., 1.4 for 1.4%).', 'bangladeshi-payments-mobile'),
+            'default' => '1.4',
+            'custom_attributes' => array(
+                'step' => '0.01',
             ),
-            'description' => array(
-                'title' => __('Description', 'bangladeshi-payments-mobile'),
-                'type' => 'textarea',
-                'description' => __('Payment method description that the customer will see during checkout.', 'bangladeshi-payments-mobile'),
-                'default' => __('Pay with nagad. Enter your nagad phone number and transaction ID.', 'bangladeshi-payments-mobile'),
-            ),
-            'account_type' => array(
-                'title' => __('Account Type', 'bangladeshi-payments-mobile'),
-                'type' => 'select',
-                'options' => array(
-                    'personal' => __('Personal', 'bangladeshi-payments-mobile'),
-                    'agent' => __('Agent', 'bangladeshi-payments-mobile'),
-                ),
-                'description' => __('Select the type of account used for nagad transactions.', 'bangladeshi-payments-mobile'),
-                'default' => 'personal',
-            ),
-            'account_number' => array(
-                'title' => __('Account Number', 'bangladeshi-payments-mobile'),
-                'type' => 'text',
-                'description' => __('Enter the account number for nagad transactions.', 'bangladeshi-payments-mobile'),
-                'default' => '',
-            ),
-            'nagad_charge' => array(
-                'title' => __('Nagad Charge (%)', 'bangladeshi-payments-mobile'),
-                'type' => 'number',
-                'description' => __('Enter the nagad charge as a percentage (e.g., 1.4 for 1.4%).', 'bangladeshi-payments-mobile'),
-                'default' => '1.4',
-                'custom_attributes' => array(
-                    'step' => '0.01',
-                ),
-            ),
-        );
-    }
-
-    // Payment fields
-    public function payment_fields() {
-
-        // Translators: %1$s is the total payment amount. %2$s is the Nagad fees amount.
-        echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_nagad_fees())) . '</p>';
-        echo '<p>' . esc_html($this->description) . '</p>';
+        ),
+    );
+}
 
 
-       // Show Account Type and Number
-       echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+public function payment_fields() {
+    // Translators: %1$s is the total payment amount. %2$s is the nagad fees amount.
+    echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_nagad_fees())) . '</p>';
+    echo '<p>' . esc_html($this->description) . '</p>';
 
-       echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
+    // Show Account Type and Number
+    echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+    echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
+    
+    echo '<div>
+            <label for="nagad_phone">' . esc_html__('Nagad Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
+            <input type="text" name="nagad_phone" id="nagad_phone" placeholder="' . esc_attr__('01XXXXXXXXX', 'bangladeshi-payments-mobile') . '" required>
+          </div>';
+    echo '<div>
+            <label for="nagad_transaction_id">' . esc_html__('Nagad Transaction ID', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
+            <input type="text" name="nagad_transaction_id" id="nagad_transaction_id" placeholder="' . esc_attr__('Transaction ID', 'bangladeshi-payments-mobile') . '" required>
+          </div>';
+    echo '<input type="hidden" name="nagad_nonce" value="' . esc_attr(wp_create_nonce('nagad_payment_nonce')) . '">';
+}
 
-        
-        echo '<div>
-                <label for="nagad_phone">' . esc_html__('Nagad Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
-                <input type="text" name="nagad_phone" id="nagad_phone" placeholder="' . esc_attr__('01XXXXXXXXX', 'bangladeshi-payments-mobile') . '" required>
-              </div>';
-        echo '<div>
-                <label for="nagad_transaction_id">' . esc_html__('Nagad Transaction ID', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
-                <input type="text" name="nagad_transaction_id" id="nagad_transaction_id" placeholder="' . esc_attr__('Transaction ID', 'bangladeshi-payments-mobile') . '" required>
-              </div>';
-        echo '<input type="hidden" name="nagad_nonce" value="' . esc_attr(wp_create_nonce('nagad_payment_nonce')) . '">';
-    }
 
     // Calculate total payment based on order total and nagad charge
-    private function calculate_total_payment() {
-        global $woocommerce;
-        $order_total = $woocommerce->cart->total; 
-        $nagad_charge_percentage = $this->get_option('nagad_charge');
-        $nagad_fee = ($order_total * ($nagad_charge_percentage / 100));
-        $total_payment = $order_total + $nagad_fee;
-        return number_format($total_payment, 2) . ' BDT';
-    }
+private function calculate_total_payment() {
+    global $woocommerce;
+    $order_total = $woocommerce->cart->total; 
+    $nagad_charge_percentage = $this->get_option('nagad_charge');
+    
+    // Check if the charge should be applied
+    $apply_nagad_charge = $this->get_option('apply_nagad_charge') === 'yes';
 
-    // Calculate nagad fees
-    private function calculate_nagad_fees() {
-        global $woocommerce;
-        $order_total = $woocommerce->cart->total; 
-        $nagad_charge_percentage = $this->get_option('nagad_charge');
-        $nagad_fee = ($order_total * ($nagad_charge_percentage / 100));
-        return number_format($nagad_fee, 2) . ' BDT';
-    }
-// Validate nagad fields (checkout)
-// Validate nagad fields (checkout)
+    $nagad_fee = $apply_nagad_charge ? ($order_total * ($nagad_charge_percentage / 100)) : 0;
+    $total_payment = $order_total + $nagad_fee;
+
+    return number_format($total_payment, 2) . ' BDT';
+}
+
+// Calculate nagad fees
+private function calculate_nagad_fees() {
+    global $woocommerce;
+    $order_total = $woocommerce->cart->total; 
+    $nagad_charge_percentage = $this->get_option('nagad_charge');
+
+    // Check if the charge should be applied
+    $apply_nagad_charge = $this->get_option('apply_nagad_charge') === 'yes';
+
+    $nagad_fee = $apply_nagad_charge ? ($order_total * ($nagad_charge_percentage / 100)) : 0;
+    return number_format($nagad_fee, 2) . ' BDT';
+}
+
+
+    // Validate nagad fields (checkout)// Validate nagad fields (checkout)
 public function validate_fields() {
     if (isset($_POST['nagad_nonce'])) {
         $nonce = sanitize_text_field(wp_unslash($_POST['nagad_nonce']));
@@ -140,7 +153,7 @@ public function validate_fields() {
             return false;
         }
     } else {
-        wc_add_notice(__('nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -152,7 +165,7 @@ public function validate_fields() {
             return false;
         }
     } else {
-        wc_add_notice(__('nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -170,7 +183,7 @@ public function process_payment($order_id) {
     if (isset($_POST['nagad_phone'])) {
         $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
     } else {
-        wc_add_notice(__('nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -178,7 +191,7 @@ public function process_payment($order_id) {
     if (isset($_POST['nagad_transaction_id'])) {
         $nagad_transaction_id = sanitize_text_field(wp_unslash($_POST['nagad_transaction_id']));
     } else {
-        wc_add_notice(__('nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('Nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -199,14 +212,13 @@ public function process_payment($order_id) {
 }
 
 
-
     // Display nagad information on the order page
     public function display_nagad_info_on_order($order_id) {
         $nagad_phone = get_post_meta($order_id, '_nagad_phone', true);
         $nagad_transaction_id = get_post_meta($order_id, '_nagad_transaction_id', true);
         
         if ($nagad_phone || $nagad_transaction_id) {
-            echo '<h3>' . esc_html('nagad Payment Information', 'bangladeshi-payments-mobile') . '</h3>';
+            echo '<h3>' . esc_html('Nagad Payment Information', 'bangladeshi-payments-mobile') . '</h3>';
             echo '<p><strong>' . esc_html('Phone Number:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($nagad_phone) . '</p>';
             echo '<p><strong>' . esc_html('Transaction ID:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($nagad_transaction_id) . '</p>';
         }

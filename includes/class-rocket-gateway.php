@@ -10,7 +10,7 @@ class WC_Gateway_rocket extends WC_Payment_Gateway {
         $this->icon = ''; 
         $this->has_fields = true; 
         $this->method_title = __('Rocket Payment', 'bangladeshi-payments-mobile');
-        $this->method_description = __('Pay via rocket by entering your phone number and transaction ID.', 'bangladeshi-payments-mobile');
+        $this->method_description = __('Pay via Rocket by entering your phone number and transaction ID.', 'bangladeshi-payments-mobile');
         
         // Load the settings
         $this->init_form_fields();
@@ -26,96 +26,111 @@ class WC_Gateway_rocket extends WC_Payment_Gateway {
     }
 
     // Admin settings fields
-    public function init_form_fields() {
-        $this->form_fields = array(
-            'enabled' => array(
-                'title' => __('Enable/Disable', 'bangladeshi-payments-mobile'),
-                'type' => 'checkbox',
-                'label' => __('Enable Rocket Payment', 'bangladeshi-payments-mobile'),
-                'default' => 'yes',
+public function init_form_fields() {
+    $this->form_fields = array(
+        'enabled' => array(
+            'title' => __('Enable/Disable', 'bangladeshi-payments-mobile'),
+            'type' => 'checkbox',
+            'label' => __('Enable Rocket Payment', 'bangladeshi-payments-mobile'),
+            'default' => 'yes',
+        ),
+        'title' => array(
+            'title' => __('Title', 'bangladeshi-payments-mobile'),
+            'type' => 'text',
+            'description' => __('This controls the title the user sees during checkout.', 'bangladeshi-payments-mobile'),
+            'default' => __('Rocket Payment', 'bangladeshi-payments-mobile'),
+            'desc_tip' => true,
+        ),
+        'description' => array(
+            'title' => __('Description', 'bangladeshi-payments-mobile'),
+            'type' => 'textarea',
+            'description' => __('Payment method description that the customer will see during checkout.', 'bangladeshi-payments-mobile'),
+            'default' => __('Pay with Rocket. Enter your rocket phone number and transaction ID.', 'bangladeshi-payments-mobile'),
+        ),
+        'account_type' => array(
+            'title' => __('Account Type', 'bangladeshi-payments-mobile'),
+            'type' => 'select',
+            'options' => array(
+                'personal' => __('Personal', 'bangladeshi-payments-mobile'),
+                'agent' => __('Agent', 'bangladeshi-payments-mobile'),
             ),
-            'title' => array(
-                'title' => __('Title', 'bangladeshi-payments-mobile'),
-                'type' => 'text',
-                'description' => __('This controls the title the user sees during checkout.', 'bangladeshi-payments-mobile'),
-                'default' => __('Rocket Payment', 'bangladeshi-payments-mobile'),
-                'desc_tip' => true,
+            'description' => __('Select the type of account used for rocket transactions.', 'bangladeshi-payments-mobile'),
+            'default' => 'personal',
+        ),
+        'account_number' => array(
+            'title' => __('Account Number', 'bangladeshi-payments-mobile'),
+            'type' => 'text',
+            'description' => __('Enter the account number for rocket transactions.', 'bangladeshi-payments-mobile'),
+            'default' => '',
+        ),
+        'apply_rocket_charge' => array(
+            'title' => __('Apply Rocket Charge', 'bangladeshi-payments-mobile'),
+            'type' => 'checkbox',
+            'label' => __('Apply Rocket charge to total payment?', 'bangladeshi-payments-mobile'),
+            'default' => 'yes',
+        ),
+        'rocket_charge' => array(
+            'title' => __('rocket Charge (%)', 'bangladeshi-payments-mobile'),
+            'type' => 'number',
+            'description' => __('Enter the rocket charge as a percentage (e.g., 1.4 for 1.4%).', 'bangladeshi-payments-mobile'),
+            'default' => '1.4',
+            'custom_attributes' => array(
+                'step' => '0.01',
             ),
-            'description' => array(
-                'title' => __('Description', 'bangladeshi-payments-mobile'),
-                'type' => 'textarea',
-                'description' => __('Payment method description that the customer will see during checkout.', 'bangladeshi-payments-mobile'),
-                'default' => __('Pay with rocket. Enter your rocket phone number and transaction ID.', 'bangladeshi-payments-mobile'),
-            ),
-            'account_type' => array(
-                'title' => __('Account Type', 'bangladeshi-payments-mobile'),
-                'type' => 'select',
-                'options' => array(
-                    'personal' => __('Personal', 'bangladeshi-payments-mobile'),
-                    'agent' => __('Agent', 'bangladeshi-payments-mobile'),
-                ),
-                'description' => __('Select the type of account used for rocket transactions.', 'bangladeshi-payments-mobile'),
-                'default' => 'personal',
-            ),
-            'account_number' => array(
-                'title' => __('Account Number', 'bangladeshi-payments-mobile'),
-                'type' => 'text',
-                'description' => __('Enter the account number for rocket transactions.', 'bangladeshi-payments-mobile'),
-                'default' => '',
-            ),
-            'rocket_charge' => array(
-                'title' => __('rocket Charge (%)', 'bangladeshi-payments-mobile'),
-                'type' => 'number',
-                'description' => __('Enter the rocket charge as a percentage (e.g., 1.4 for 1.4%).', 'bangladeshi-payments-mobile'),
-                'default' => '1.4',
-                'custom_attributes' => array(
-                    'step' => '0.01',
-                ),
-            ),
-        );
-    }
+        ),
+    );
+}
 
-    // Payment fields
-    public function payment_fields() {
 
-        // Translators: %1$s is the total payment amount. %2$s is the Rocket fees amount.
-        echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_rocket_fees())) . '</p>';
-        echo '<p>' . esc_html($this->description) . '</p>';
+public function payment_fields() {
+    // Translators: %1$s is the total payment amount. %2$s is the rocket fees amount.
+    echo '<p>' . sprintf(esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), esc_html($this->calculate_total_payment()), esc_html($this->calculate_rocket_fees())) . '</p>';
+    echo '<p>' . esc_html($this->description) . '</p>';
 
-        // Show Account Type and Number
-        echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+    // Show Account Type and Number
+    echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
+    echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
+    
+    echo '<div>
+            <label for="rocket_phone">' . esc_html__('Rocket Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
+            <input type="text" name="rocket_phone" id="rocket_phone" placeholder="' . esc_attr__('01XXXXXXXXX', 'bangladeshi-payments-mobile') . '" required>
+          </div>';
+    echo '<div>
+            <label for="rocket_transaction_id">' . esc_html__('Rocket Transaction ID', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
+            <input type="text" name="rocket_transaction_id" id="rocket_transaction_id" placeholder="' . esc_attr__('Transaction ID', 'bangladeshi-payments-mobile') . '" required>
+          </div>';
+    echo '<input type="hidden" name="rocket_nonce" value="' . esc_attr(wp_create_nonce('rocket_payment_nonce')) . '">';
+}
 
-        echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
-        
-        echo '<div>
-                <label for="rocket_phone">' . esc_html__('rocket Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
-                <input type="text" name="rocket_phone" id="rocket_phone" placeholder="' . esc_attr__('01XXXXXXXXX', 'bangladeshi-payments-mobile') . '" required>
-              </div>';
-        echo '<div>
-                <label for="rocket_transaction_id">' . esc_html__('rocket Transaction ID', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
-                <input type="text" name="rocket_transaction_id" id="rocket_transaction_id" placeholder="' . esc_attr__('Transaction ID', 'bangladeshi-payments-mobile') . '" required>
-              </div>';
-        echo '<input type="hidden" name="rocket_nonce" value="' . esc_attr(wp_create_nonce('rocket_payment_nonce')) . '">';
-    }
 
     // Calculate total payment based on order total and rocket charge
-    private function calculate_total_payment() {
-        global $woocommerce;
-        $order_total = $woocommerce->cart->total; 
-        $rocket_charge_percentage = $this->get_option('rocket_charge');
-        $rocket_fee = ($order_total * ($rocket_charge_percentage / 100));
-        $total_payment = $order_total + $rocket_fee;
-        return number_format($total_payment, 2) . ' BDT';
-    }
+private function calculate_total_payment() {
+    global $woocommerce;
+    $order_total = $woocommerce->cart->total; 
+    $rocket_charge_percentage = $this->get_option('rocket_charge');
+    
+    // Check if the charge should be applied
+    $apply_rocket_charge = $this->get_option('apply_rocket_charge') === 'yes';
 
-    // Calculate rocket fees
-    private function calculate_rocket_fees() {
-        global $woocommerce;
-        $order_total = $woocommerce->cart->total; 
-        $rocket_charge_percentage = $this->get_option('rocket_charge');
-        $rocket_fee = ($order_total * ($rocket_charge_percentage / 100));
-        return number_format($rocket_fee, 2) . ' BDT';
-    }
+    $rocket_fee = $apply_rocket_charge ? ($order_total * ($rocket_charge_percentage / 100)) : 0;
+    $total_payment = $order_total + $rocket_fee;
+
+    return number_format($total_payment, 2) . ' BDT';
+}
+
+// Calculate rocket fees
+private function calculate_rocket_fees() {
+    global $woocommerce;
+    $order_total = $woocommerce->cart->total; 
+    $rocket_charge_percentage = $this->get_option('rocket_charge');
+
+    // Check if the charge should be applied
+    $apply_rocket_charge = $this->get_option('apply_rocket_charge') === 'yes';
+
+    $rocket_fee = $apply_rocket_charge ? ($order_total * ($rocket_charge_percentage / 100)) : 0;
+    return number_format($rocket_fee, 2) . ' BDT';
+}
+
 
     // Validate rocket fields (checkout)// Validate rocket fields (checkout)
 public function validate_fields() {
@@ -138,7 +153,7 @@ public function validate_fields() {
             return false;
         }
     } else {
-        wc_add_notice(__('Rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -150,7 +165,7 @@ public function validate_fields() {
             return false;
         }
     } else {
-        wc_add_notice(__('Rocket transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('rocket transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
@@ -227,7 +242,7 @@ function display_rocket_info_admin_order($order) {
         ?>
             <div class="paymen-order-page">
                 <?php 
-                    echo '<h3>' . esc_html('Rocket Payment Information', 'bangladeshi-payments-mobile') . '</h3>';
+                    echo '<h3>' . esc_html('rocket Payment Information', 'bangladeshi-payments-mobile') . '</h3>';
                     echo '<p><strong>' . esc_html('Phone Number:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($rocket_phone) . '</p>';
                     echo '<p><strong>' . esc_html('Transaction ID:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($rocket_transaction_id) . '</p>';
                 ?>

@@ -14,6 +14,20 @@ function bangladeshi_payments_add_admin_menu() {
 add_action('admin_menu', 'bangladeshi_payments_add_admin_menu');
 
 function bangladeshi_payments_render_transaction_info_page() {
+
+    // Check if the nonce is set and valid
+if (isset($_GET['bangladeshi_payments_nonce'])) {
+    $nonce = wp_unslash($_GET['bangladeshi_payments_nonce']); // Unsplash the nonce
+    $nonce = sanitize_text_field($nonce); // Sanitize the nonce
+
+    if (!wp_verify_nonce($nonce, 'bangladeshi_payments_report')) {
+        // Invalid nonce - exit the function
+        echo '<div class="notice notice-error"><p>' . esc_html__('Security check failed. Please try again.', 'bangladeshi-payments-mobile') . '</p></div>';
+        return; // Stop processing further
+    }
+}
+
+
     // Get sorting and filtering parameters
     $order_by = isset($_GET['orderby']) ? sanitize_text_field(wp_unslash($_GET['orderby'])) : 'ID';
     $order = isset($_GET['order']) ? sanitize_text_field(wp_unslash($_GET['order'])) : 'DESC';
@@ -50,7 +64,7 @@ function bangladeshi_payments_render_transaction_info_page() {
             <input type="date" name="start_date" id="start_date" value="<?php echo esc_attr($start_date ? gmdate('Y-m-d', strtotime($start_date)) : ''); ?>">
             &nbsp;
             <label for="end_date"><?php esc_html_e('End Date:', 'bangladeshi-payments-mobile'); ?></label>
-            <input type="date" name="end_date" id="end_date" value="<?php echo esc_attr($end_date ? date('Y-m-d', strtotime($end_date)) : ''); ?>">
+            <input type="date" name="end_date" id="end_date" value="<?php echo esc_attr($end_date ? gmdate('Y-m-d', strtotime($end_date)) : ''); ?>">
             &nbsp;
             <input type="submit" class="button" value="<?php esc_attr_e('Generate Report', 'bangladeshi-payments-mobile'); ?>">
         </form>
@@ -87,8 +101,10 @@ function bangladeshi_payments_render_transaction_info_page() {
 
                 // Display total amount only if there's a positive total
                 if ($total_amount > 0) {
-                    echo '<h2>' . esc_html__('Total Amount: ', 'bangladeshi-payments-mobile') . wc_price($total_amount) . '</h2>';
+                    // Escape the label and format the total amount
+                    echo '<h2>' . esc_html__('Total Amount: ', 'bangladeshi-payments-mobile') . wp_kses_post(wc_price($total_amount)) . '</h2>';
                 }
+
             }
         }
         ?>
@@ -201,7 +217,7 @@ function bangladeshi_payments_render_transaction_info_page() {
             echo '<td>' . esc_html(ucwords($payment_method)) . '</td>';
             echo '<td>' . esc_html($transaction_id ?: 'N/A') . '</td>';
             echo '<td>' . esc_html($phone_number ?: 'N/A') . '</td>'; // Phone number display
-            echo '<td>' . wc_price($amount) . '</td>';
+            echo '<td>' . wp_kses_post(wc_price($amount)) . '</td>';
             echo '<td>' . esc_html($order->get_date_created()->date('d F Y')) . '</td>'; // Updated date format
             echo '<td><a href="' . esc_url($order->get_edit_order_url()) . '">' . esc_html__('Edit Order', 'bangladeshi-payments-mobile') . '</a></td>';
 
@@ -216,7 +232,7 @@ function bangladeshi_payments_render_transaction_info_page() {
 
         <!-- Display Total Amount after the table -->
         <?php if ($total_amount > 0): ?>
-            <h2><?php esc_html_e('Total Amount: ', 'bangladeshi-payments-mobile'); echo wc_price($total_amount); ?></h2>
+            <h2><?php esc_html_e('Total Amount: ', 'bangladeshi-payments-mobile'); echo wp_kses_post(wc_price($total_amount)); ?></h2>
         <?php endif; ?>
     </div>
     <?php

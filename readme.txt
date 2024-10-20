@@ -4,7 +4,7 @@ Donate link: https://devnahian.com
 Tags: WooCommerce, payment gateway, bKash, Nagad, Bangladesh
 Requires at least: 5.0
 Tested up to: 6.6
-Stable tag: 1.0.1
+Stable tag: 1.0.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -15,11 +15,11 @@ Bangladeshi Payments Mobile is a WooCommerce payment gateway for mobile.
 Bangladeshi Payments Mobile is a custom WooCommerce payment gateway that integrates popular mobile payment services in Bangladesh, including bKash, Nagad, Rocket, and Upay. It allows customers to securely and efficiently make payments using their mobile payment accounts. Merchants can benefit from this plugin's user-friendly interface, simple setup, and reliable payment processing capabilities.
 
 == Features ==
-    Secure bKash, Nagad, Rocket, and Upay payment gateway integration.
-    Custom fields for mobile number and transaction ID.
-    Calculate transaction charges during checkout for each payment method.
-    Admin order details with payment information.
-    Customizable settings for merchants (title, description, charges for each payment method).
+- Secure bKash, Nagad, Rocket, and Upay payment gateway integration.
+- Custom fields for mobile number and transaction ID.
+- Calculate transaction charges during checkout for each payment method.
+- Admin order details with payment information.
+- Customizable settings for merchants (title, description, charges for each payment method).
 
 == Installation ==
     1. Upload the plugin files to the /wp-content/plugins/Bangladeshi Payments Mobile/ directory, or install the plugin through the WordPress plugins screen directly.
