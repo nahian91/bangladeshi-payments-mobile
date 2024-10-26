@@ -180,10 +180,14 @@ public function process_payment($order_id) {
     }
 
     // Check for rocket phone number
-    if (isset($_POST['rocket_phone'])) {
+    if (isset($_POST['rocket_phone']) && !empty($_POST['rocket_phone'])) {
         $rocket_phone = sanitize_text_field(wp_unslash($_POST['rocket_phone']));
+        if (!preg_match('/^01[0-9]{9}$/', $rocket_phone)) {
+            wc_add_notice(__('Please enter a valid rocket phone number starting with 01 and containing 11 digits.', 'bangladeshi-payments-mobile'), 'error');
+            return false;
+        }
     } else {
-        wc_add_notice(__('Rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('rocket phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 

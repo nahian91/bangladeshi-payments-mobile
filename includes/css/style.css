@@ -6,6 +6,7 @@
   border: 1px solid #ddd;
 }
 .payment_box input {
+  font-family: Arial, Helvetica, sans-serif;
   display: block;
   width: 100%;
   border: 1px solid #ddd;

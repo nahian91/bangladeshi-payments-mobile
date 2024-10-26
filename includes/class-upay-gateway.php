@@ -180,10 +180,14 @@ public function process_payment($order_id) {
     }
 
     // Check for upay phone number
-    if (isset($_POST['upay_phone'])) {
+    if (isset($_POST['upay_phone']) && !empty($_POST['upay_phone'])) {
         $upay_phone = sanitize_text_field(wp_unslash($_POST['upay_phone']));
+        if (!preg_match('/^01[0-9]{9}$/', $upay_phone)) {
+            wc_add_notice(__('Please enter a valid upay phone number starting with 01 and containing 11 digits.', 'bangladeshi-payments-mobile'), 'error');
+            return false;
+        }
     } else {
-        wc_add_notice(__('Upay phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('upay phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 

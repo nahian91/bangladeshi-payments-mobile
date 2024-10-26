@@ -88,6 +88,8 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
         // Show Account Type and Number
         echo '<p><strong>' . esc_html__('Account Type: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html(ucfirst($this->account_type)) . '</p>';
         echo '<p><strong>' . esc_html__('Account Number: ', 'bangladeshi-payments-mobile') . '</strong>' . esc_html($this->account_number) . '</p>';
+
+        
         
         echo '<div>
                 <label for="bkash_phone">' . esc_html__('bKash Phone Number', 'bangladeshi-payments-mobile') . ' <span class="required">*</span></label>
@@ -174,13 +176,18 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
             return false;
         }
 
-        // Check for bkash phone number
-        if (isset($_POST['bkash_phone'])) {
+        // Check for bKash phone number
+        if (isset($_POST['bkash_phone']) && !empty($_POST['bkash_phone'])) {
             $bkash_phone = sanitize_text_field(wp_unslash($_POST['bkash_phone']));
+            if (!preg_match('/^01[0-9]{9}$/', $bkash_phone)) {
+                wc_add_notice(__('Please enter a valid bKash phone number starting with 01 and containing 11 digits.', 'bangladeshi-payments-mobile'), 'error');
+                return false;
+            }
         } else {
-            wc_add_notice(__('bkash phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+            wc_add_notice(__('bKash phone number is required.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
+
 
         // Check for bkash transaction ID
         if (isset($_POST['bkash_transaction_id'])) {

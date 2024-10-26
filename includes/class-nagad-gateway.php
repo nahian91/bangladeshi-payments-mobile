@@ -180,10 +180,14 @@ public function process_payment($order_id) {
     }
 
     // Check for nagad phone number
-    if (isset($_POST['nagad_phone'])) {
+    if (isset($_POST['nagad_phone']) && !empty($_POST['nagad_phone'])) {
         $nagad_phone = sanitize_text_field(wp_unslash($_POST['nagad_phone']));
+        if (!preg_match('/^01[0-9]{9}$/', $nagad_phone)) {
+            wc_add_notice(__('Please enter a valid nagad phone number starting with 01 and containing 11 digits.', 'bangladeshi-payments-mobile'), 'error');
+            return false;
+        }
     } else {
-        wc_add_notice(__('Nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
+        wc_add_notice(__('nagad phone number is required.', 'bangladeshi-payments-mobile'), 'error');
         return false;
     }
 
