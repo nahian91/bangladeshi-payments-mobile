@@ -18,6 +18,7 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
 
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
+        $this->icon = plugins_url( 'img/bkash.png', __FILE__ );
         $this->account_type = $this->get_option('account_type'); 
         $this->account_number = $this->get_option('account_number'); 
         $this->bkash_charge = $this->get_option('bkash_charge'); 
@@ -130,7 +131,7 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
         return number_format($bkash_fee, 2) . ' BDT';
     }
 
-    // Validate bkash fields (checkout)// Validate bkash fields (checkout)
+    // Validate bkash fields (checkout)
     public function validate_fields() {
         if (isset($_POST['bkash_nonce'])) {
             $nonce = sanitize_text_field(wp_unslash($_POST['bkash_nonce']));

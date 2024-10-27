@@ -219,7 +219,7 @@ if (isset($_GET['bangladeshi_payments_nonce'])) {
             echo '<td>' . esc_html($phone_number ?: 'N/A') . '</td>'; // Phone number display
             echo '<td>' . wp_kses_post(wc_price($amount)) . '</td>';
             echo '<td>' . esc_html($order->get_date_created()->date('d F Y')) . '</td>'; // Updated date format
-            echo '<td><a href="' . esc_url($order->get_edit_order_url()) . '">' . esc_html__('Edit Order', 'bangladeshi-payments-mobile') . '</a></td>';
+            echo '<td><a href="' . esc_url($order->get_edit_order_url()) . '" class="button button-primary">' . esc_html__('Edit Order', 'bangladeshi-payments-mobile') . '</a></td>';
 
             // Accumulate total amount for displaying later
             $total_amount += $amount;

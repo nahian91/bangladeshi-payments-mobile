@@ -17,7 +17,8 @@ class WC_Gateway_upay extends WC_Payment_Gateway {
         $this->init_settings();
 
         $this->title = $this->get_option('title');
-        $this->description = $this->get_option('description');
+        $this->description = $this->get_option('description');        
+        $this->icon = plugins_url( 'img/upay.png', __FILE__ );
         $this->account_type = $this->get_option('account_type'); 
         $this->account_number = $this->get_option('account_number'); 
         $this->upay_charge = $this->get_option('upay_charge'); 
@@ -38,7 +39,7 @@ public function init_form_fields() {
             'title' => __('Title', 'bangladeshi-payments-mobile'),
             'type' => 'text',
             'description' => __('This controls the title the user sees during checkout.', 'bangladeshi-payments-mobile'),
-            'default' => __('Upay Payment', 'bangladeshi-payments-mobile'),
+            'default' => __('Upay', 'bangladeshi-payments-mobile'),
             'desc_tip' => true,
         ),
         'description' => array(
