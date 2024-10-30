@@ -37,6 +37,11 @@ function bangladeshi_payments_check_woocommerce() {
 
     // Add an admin menu page for transaction info
     add_action('admin_menu', 'bangladeshi_payments_add_admin_menu');
+
+    // Add a custom column to the WooCommerce Orders page
+    add_filter('manage_edit-shop_order_columns', 'add_custom_order_column');
+    add_action('manage_shop_order_posts_custom_column', 'custom_order_column_content', 10, 2);
+    add_filter('manage_edit-shop_order_sortable_columns', 'make_custom_order_column_sortable');
 }
 
 // Show an admin notice if WooCommerce is not installed or activated
@@ -54,3 +59,29 @@ function bangladeshi_payments_add_gateway_class($gateways) {
 }
 
 require_once plugin_dir_path(__FILE__) . 'includes/bangladeshi-payments-mobile-menu.php';
+
+// Add a custom column to the WooCommerce Orders page
+function add_custom_order_column($columns) {
+    // Insert the custom column after the "order total" column
+    $columns['custom_column'] = __('Custom Column', 'bangladeshi-payments-mobile'); // Update text domain
+    return $columns;
+}
+
+// Display content in the custom column
+function custom_order_column_content($column, $post_id) {
+    if ('custom_column' === $column) {
+        // For debugging: output the post ID and check if the function is called
+        echo '<strong>Order ID:</strong> ' . esc_html($post_id) . '<br>'; // Debug line
+        
+        // Retrieve your custom data (replace with your logic)
+        // Temporary static value for testing
+        $custom_data = 'Test Value'; // Temporarily return a test value
+        echo esc_html($custom_data);
+    }
+}
+
+// Make the custom column sortable (optional)
+function make_custom_order_column_sortable($columns) {
+    $columns['custom_column'] = 'custom_column';
+    return $columns;
+}

@@ -246,11 +246,22 @@ function display_rocket_info_admin_order($order) {
     if ($rocket_phone || $rocket_transaction_id) {
         ?>
             <div class="paymen-order-page">
-                <?php 
-                    echo '<h3>' . esc_html('rocket Payment Information', 'bangladeshi-payments-mobile') . '</h3>';
-                    echo '<p><strong>' . esc_html('Phone Number:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($rocket_phone) . '</p>';
-                    echo '<p><strong>' . esc_html('Transaction ID:', 'bangladeshi-payments-mobile') . '</strong> ' . esc_html($rocket_transaction_id) . '</p>';
-                ?>
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            <img src="<?php echo plugins_url('img/rocket.png', __FILE__); ?>" alt="">
+                            <h4><?php echo esc_html('Rocket Payment Information', 'bangladeshi-payments-mobile'); ?></h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><?php echo esc_html('Phone Number:', 'bangladeshi-payments-mobile');?></td>
+                        <td><?php echo esc_html($rocket_phone);?></td>
+                    </tr>
+                    <tr>
+                        <td><?php echo esc_html('Transaction ID:', 'bangladeshi-payments-mobile');?></td>
+                        <td><?php echo esc_html($rocket_transaction_id);?></td>
+                    </tr>
+                </table>
             </div>
         <?php 
     }
