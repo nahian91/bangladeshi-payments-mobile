@@ -245,7 +245,7 @@ function display_upay_info_admin_order($order) {
     
     if ($upay_phone || $upay_transaction_id) {
         ?>
-            <div class="paymen-order-page">
+            <div class="payment-order-page">
                 <table>
                     <tr>
                         <td colspan="2">

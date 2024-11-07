@@ -1,17 +1,91 @@
 <?php
-// Add an admin menu page for transaction info
+// Add the main menu page and submenus for Bangladeshi Payments Mobile
 function bangladeshi_payments_add_admin_menu() {
+    // Main menu
     add_menu_page(
-        __('Transaction Info', 'bangladeshi-payments-mobile'), // Page title
-        __('Transaction Info', 'bangladeshi-payments-mobile'), // Menu title
+        __('BD Payments', 'bangladeshi-payments-mobile'), // Page title
+        __('BD Payments', 'bangladeshi-payments-mobile'), // Menu title
         'manage_options', // Capability
-        'bangladeshi-payments-transaction-info', // Menu slug
-        'bangladeshi_payments_render_transaction_info_page', // Callback function
-        'dashicons-list-view', // Icon
+        'bangladeshi-payments-mobile', // Menu slug
+        'bangladeshi_payments_render_general_page', // Callback function
+        'dashicons-money', // Icon
         56 // Position
+    );
+
+    // Transaction Info submenu
+    add_submenu_page(
+        'bangladeshi-payments-mobile',
+        __('Transaction Info', 'bangladeshi-payments-mobile'),
+        __('Transaction Info', 'bangladeshi-payments-mobile'),
+        'manage_options',
+        'bangladeshi-payments-transaction-info',
+        'bangladeshi_payments_render_transaction_info_page'
     );
 }
 add_action('admin_menu', 'bangladeshi_payments_add_admin_menu');
+
+// Render the General page
+function bangladeshi_payments_render_general_page() {
+    $image_url = plugins_url( '/img/banner.jpg', __FILE__ );
+    ?>
+    <div class="wrap bpm-wrap">
+        <h4><?php esc_html_e('General Information', 'bangladeshi-payments-mobile'); ?></h4>
+        <div class="bpb-general">
+            <div class="bpb-general-content">
+            <img src="<?php echo $image_url;?>" alt="">
+            <p><?php esc_html_e('Welcome to the Bangladeshi Payments Mobile plugin! This plugin supports mobile payment gateways including bKash, Nagad, Rocket, and Upay.', 'bangladeshi-payments-mobile'); ?></p>
+            
+            <p><?php esc_html_e('Use this plugin to easily integrate popular Bangladeshi mobile payment methods with your WooCommerce store. Ensure you configure each payment method in the settings to start receiving payments.', 'bangladeshi-payments-mobile'); ?></p>
+            
+            <p><?php esc_html_e('For any questions or support, please refer to the documentation or contact us directly.', 'bangladeshi-payments-mobile'); ?></p>
+            
+            <p><?php esc_html_e('Thank you for choosing Bangladeshi Payments Mobile!', 'bangladeshi-payments-mobile'); ?></p>
+            
+            <!-- Review Button -->
+            <a href="https://wordpress.org/support/view/plugin-reviews/bangladeshi-payments-mobile" class="button button-primary" target="_blank">
+                <?php esc_html_e('Leave a Review', 'bangladeshi-payments-mobile'); ?>
+            </a>
+            </div>
+            <div class="bpb-general-support">
+                <div class="single-bpb-support">
+                <ul>
+    <li>
+        <span class="dashicons dashicons-email"></span> 
+        <div id="email-text">nahiansylhet@gmail.com</div>
+        <button class="copy-btn" onclick="copyToClipboard('#email-text')">Copy</button>
+    </li>
+    <li>
+        <span class="dashicons dashicons-admin-site"></span>
+        <div id="website-text">www.devnahian.com</div>
+        <button class="copy-btn" onclick="copyToClipboard('#website-text')">Copy</button>
+    </li>
+    <li>
+        <span class="dashicons dashicons-whatsapp"></span>
+        <div id="whatsapp-text">+8801686195607</div>
+        <button class="copy-btn" onclick="copyToClipboard('#whatsapp-text')">Copy</button>
+    </li>
+</ul>
+
+<script>
+    // Function to copy text to clipboard
+    function copyToClipboard(elementId) {
+        var text = document.querySelector(elementId).textContent;
+        var tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = text;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Copied: ' + text); // Optional: Alert the user that the text was copied
+    }
+</script>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
 
 function bangladeshi_payments_render_transaction_info_page() {
 
@@ -44,8 +118,8 @@ if (isset($_GET['bangladeshi_payments_nonce'])) {
     $payment_methods = ['all' => 'All', 'bkash' => 'Bkash', 'rocket' => 'Rocket', 'nagad' => 'Nagad', 'upay' => 'Upay'];
 
     ?>
-    <div class="wrap">
-        <h1><?php esc_html_e('Transaction Information', 'bangladeshi-payments-mobile'); ?></h1>
+    <div class="wrap bpm-wrap">
+        <h4><?php esc_html_e('Transaction Information', 'bangladeshi-payments-mobile'); ?></h4>
         <br>
         <!-- Report Form -->
         <form method="GET">
@@ -237,3 +311,5 @@ if (isset($_GET['bangladeshi_payments_nonce'])) {
     </div>
     <?php
 }
+
+?>

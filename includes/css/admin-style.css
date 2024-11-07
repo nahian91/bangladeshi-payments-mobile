@@ -1,10 +1,11 @@
-.paymen-order-page table {
+/* Table Styles */
+.payment-order-page table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
     border: 1px solid #ddd;
 }
-.paymen-order-page table tr:first-child td {
+.payment-order-page table tr:first-child td {
     background-color: #f5f5f5;
     padding: 10px;
     text-align: left;
@@ -13,19 +14,84 @@
     border-left: none;
     border-right: none;
 }
-.paymen-order-page table td {
+.payment-order-page table td {
     padding: 12px;
     border: 1px solid #ddd;
 }
-.paymen-order-page h4 {
+
+/* Heading Styles */
+.payment-order-page h4 {
     display: inline;
     font-size: 1.1em;
     font-weight: bold;
     color: #333;
     margin-left: 10px;
 }
-.paymen-order-page img {
+
+/* Image Styles */
+.payment-order-page img {
     height: 24px;
     vertical-align: middle;
     margin-right: 5px;
+}
+
+/* General Wrapper */
+.wrap.bpm-wrap {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #f4f4f4;
+    padding-top: 0;
+    margin-top: 30px;
+    border-radius: 9px;
+}
+
+/* Header for the General Wrapper */
+.wrap.bpm-wrap h4 {
+    font-size: 26px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 20px;
+    margin: 20px 0;
+}
+
+/* General Layout */
+.bpb-general {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+.bpb-general-content {
+    flex-basis: 70%;
+}
+.bpb-general-support {
+    flex-basis: 25%;
+}
+
+/* Content Image */
+.bpb-general-content img {
+    width: 100%;
+}
+
+/* Content Paragraph */
+.bpb-general-content p {
+    font-size: 17px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Support List */
+.single-bpb-support li {
+    position: relative;
+    padding-left: 35px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    font-size: 17px;
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+}
+
+.single-bpb-support li span {
+    position: absolute;
+    left: 0;
+    top: 1px;
 }

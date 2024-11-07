@@ -20,17 +20,17 @@
 .payment_box label {
   margin-bottom: 5px !important;
 }
-.paymen-order-page {
+.payment-order-page {
   border: 1px solid #ddd;
   padding: 10px;
 }
-.paymen-order-page h3, .paymen-order-page p {
+.payment-order-page h3, .payment-order-page p {
   margin: 0 !important;
 }
-.paymen-order-page p {
+.payment-order-page p {
   margin: 15px 0 !important;
 }
-.paymen-order-page p:last-child {
+.payment-order-page p:last-child {
   margin-bottom: 0 !important;
 }
 .wc_payment_method.payment_method_bkash label, .wc_payment_method.payment_method_rocket label, .wc_payment_method.payment_method_nagad label, .wc_payment_method.payment_method_upay label {

@@ -243,7 +243,7 @@ function display_bkash_info_admin_order($order) {
     
     if ($bkash_phone || $bkash_transaction_id) {
         ?>
-            <div class="paymen-order-page">
+            <div class="payment-order-page">
                 <table>
                     <tr>
                         <td colspan="2">
