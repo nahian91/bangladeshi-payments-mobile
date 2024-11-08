@@ -61,10 +61,10 @@
     flex-wrap: wrap;
 }
 .bpb-general-content {
-    flex-basis: 70%;
+    flex-basis: 60%;
 }
 .bpb-general-support {
-    flex-basis: 25%;
+    flex-basis: 35%;
 }
 
 /* Content Image */
@@ -90,8 +90,60 @@
     font-weight: 600;
 }
 
-.single-bpb-support li span {
+.single-bpb-support li span.das-icons {
     position: absolute;
     left: 0;
     top: 1px;
 }
+
+.transaction-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 16px;
+	font-family: Arial, sans-serif;
+	border: 1px solid #ddd;
+	margin-bottom: 30px;
+}
+
+.transaction-table th, .transaction-table td {
+	padding: 12px 15px;
+	text-align: left;
+	font-size: 15px;
+}
+
+.transaction-table thead tr {
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: left;
+}
+
+.transaction-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.transaction-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.transaction-table tbody tr:last-of-type {
+    border-bottom: 2px solid #f4f4f4;
+}
+
+.transaction-table td.status-active {
+    color: #28a745;
+    font-weight: 555;
+}
+
+.transaction-table td.status-inactive {
+    color: #dc3545;
+    font-weight: bold;
+}
+.copy-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    color: #999;
+  }
