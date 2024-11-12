@@ -50,6 +50,51 @@ if ( ! function_exists( 'bpm_fs' ) ) {
     do_action( 'bpm_fs_loaded' );
 }
 
+/**
+ * Plugin activation hook
+ * Sets a transient to handle redirection after activation
+ */
+register_activation_hook(__FILE__, 'bangladeshi_payments_mobile_activate');
+
+function bangladeshi_payments_mobile_activate() {
+    // Set a transient to check activation
+    set_transient('bangladeshi_payments_mobile_activation_redirect', true, 30);
+}
+
+/**
+ * Admin init hook for handling redirection after activation
+ */
+add_action('admin_init', 'bangladeshi_payments_mobile_redirect_after_activation');
+
+function bangladeshi_payments_mobile_redirect_after_activation() {
+    // Check if the transient is set
+    if (get_transient('bangladeshi_payments_mobile_activation_redirect')) {
+        // Delete the transient to avoid repeated redirects
+        delete_transient('bangladeshi_payments_mobile_activation_redirect');
+
+        // Prevent redirection during bulk plugin activation
+        if (is_network_admin() || isset($_GET['activate-multi'])) {
+            return;
+        }
+
+        // Redirect to the WooCommerce General Settings page
+        wp_safe_redirect(admin_url('admin.php?page=bangladeshi-payments-mobile'));
+        exit;
+    }
+}
+
+/**
+ * Add Settings link on the plugin page
+ */
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'bangladeshi_payments_mobile_settings_link');
+
+function bangladeshi_payments_mobile_settings_link($links) {
+    $settings_link = '<a href="' . admin_url('admin.php?page=bangladeshi-payments-mobile') . '">Settings</a>';
+    array_unshift($links, $settings_link);
+    return $links;
+}
+
+
 // Ensure WooCommerce is active before initializing the plugin
 add_action('plugins_loaded', 'bangladeshi_payments_check_woocommerce', 11);
 function bangladeshi_payments_check_woocommerce() {
