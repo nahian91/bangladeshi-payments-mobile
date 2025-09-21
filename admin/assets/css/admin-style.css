@@ -1,0 +1,173 @@
+/* Table Styles */
+.payment-order-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+}
+.payment-order-page table tr:first-child td {
+    background-color: #f5f5f5;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+.payment-order-page table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+/* Heading Styles */
+.payment-order-page h4 {
+    display: inline;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    margin-left: 10px;
+}
+
+/* Image Styles */
+.payment-order-page img {
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* General Wrapper */
+.wrap.bpm-wrap {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #f4f4f4;
+    padding-top: 0;
+    margin-top: 30px;
+    border-radius: 9px;
+}
+
+/* Header for the General Wrapper */
+.wrap.bpm-wrap h4 {
+    font-size: 26px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 20px;
+    margin: 20px 0;
+}
+
+/* General Layout */
+.bpb-general {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+.bpb-general-content {
+    flex-basis: 60%;
+}
+.bpb-general-support {
+    flex-basis: 35%;
+}
+
+/* Content Image */
+.bpb-general-content img {
+    width: 100%;
+}
+
+/* Content Paragraph */
+.bpb-general-content p {
+    font-size: 17px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Support List */
+.single-bpb-support li {
+    position: relative;
+    padding-left: 35px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    font-size: 17px;
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+}
+.single-bpb-support li span.das-icons {
+    position: absolute;
+    left: 0;
+    top: 1px;
+}
+.transaction-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 16px;
+	font-family: Arial, sans-serif;
+	border: 1px solid #ddd;
+	margin-bottom: 30px;
+}
+.transaction-table th, .transaction-table td {
+	padding: 12px 15px;
+	text-align: left;
+	font-size: 15px;
+}
+.transaction-table thead tr {
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: left;
+}
+.transaction-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+.transaction-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+.transaction-table tbody tr:last-of-type {
+    border-bottom: 2px solid #f4f4f4;
+}
+.transaction-table td.status-active {
+    color: #28a745;
+    font-weight: 555;
+}
+.transaction-table td.status-inactive {
+    color: #dc3545;
+    font-weight: bold;
+}
+.copy-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    color: #999;
+}
+
+.bkash-image {
+    background-image: url('../../assets/img/bkash.png');
+}
+.rocket-image {
+    background-image: url('../../assets/img/rocket.png');
+}
+.nagad-image {
+    background-image: url('../../assets/img/nagad.png');
+}
+.upay-image {
+    background-image: url('../../assets/img/upay.png');
+}
+.bpm-bg-image{
+    background-size: cover;
+    background-position: center;
+    width: 40px;
+    height: 40px;
+}
+.payment-order-page-heading {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+.payment-order-page-heading h4{
+    margin-top: 0 !important;
+}
+.bpm-banner {
+	background-image: url('../../assets/img/banner.jpg');
+	background-size: cover;
+	background-position: center;
+	padding-top: 32%;
+}

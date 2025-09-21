@@ -1,0 +1,41 @@
+.payment_box {
+  padding: 0 !important;
+  background-color: #f4f4f4;
+  padding: 15px !important;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+}
+.payment_box input {
+  font-family: Arial, Helvetica, sans-serif;
+  display: block;
+  width: 100%;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+.payment_box div {
+  margin-top: 15px;
+}
+.payment_box label {
+  margin-bottom: 5px !important;
+}
+.payment-order-page {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+.payment-order-page h3, .payment-order-page p {
+  margin: 0 !important;
+}
+.payment-order-page p {
+  margin: 15px 0 !important;
+}
+.payment-order-page p:last-child {
+  margin-bottom: 0 !important;
+}
+.wc_payment_method.payment_method_bkash label img, .wc_payment_method.payment_method_rocket label img, .wc_payment_method.payment_method_nagad label img, .wc_payment_method.payment_method_upay label img{
+  margin-left: 20px;
+  width: 30px;
+  position: absolute;
+}
+
