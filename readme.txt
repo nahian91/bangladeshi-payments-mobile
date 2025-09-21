@@ -1,7 +1,7 @@
 === Bangladeshi Payments Mobile – QR Code & Transaction Reports ===
 Contributors: nahian91
 Donate link: https://devnahian.com
-Tags: WooCommerce, bKash, Nagad, Rocket, Upay, Bangladesh, Mobile Payments, QR Code, Transaction Reports
+Tags: WooCommerce, bKash, Nagad, Rocket, Payments
 Requires at least: 5.0
 Tested up to: 6.8
 Stable tag: 1.4

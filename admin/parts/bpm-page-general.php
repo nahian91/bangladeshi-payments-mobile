@@ -31,7 +31,67 @@ function bangladeshi_payments_render_general_page() {
                 <a href="https://wordpress.org/support/view/plugin-reviews/bangladeshi-payments-mobile" class="button button-primary" target="_blank">
                     <?php esc_html_e('Leave a Review', 'bangladeshi-payments-mobile'); ?>
                 </a>
+
+                <h4 style="margin-top: 50px;"><?php esc_html_e('My Other Plugins', 'bangladeshi-payments-mobile'); ?></h4>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e('Plugin Name', 'bangladeshi-payments-mobile'); ?></th>
+                            <th><?php esc_html_e('Download', 'bangladeshi-payments-mobile'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Define your plugins list
+                        $my_plugins = [
+                            [
+                                'name' => 'Awesome Blocks for Gutenberg',
+                                'download' => 'https://wordpress.org/plugins/awesome-block/'
+                            ],
+                            [
+                                'name' => 'Awesome Invoice, Delivery Notes & Packing Slips',
+                                'download' => 'https://wordpress.org/plugins/awesome-invoice-delivery-notes-packing-slips/'
+                            ],
+                            [
+                                'name' => 'Awesome Team Widgets for Elementor',
+                                'download' => 'https://wordpress.org/plugins/awesome-team-widgets/'
+                            ],
+                            [
+                                'name' => 'Awesome Widgets for Elementor',
+                                'download' => 'https://wordpress.org/plugins/awesome-widgets/'
+                            ],
+                            [
+                                'name' => 'Infinity FAQ Schema & Accordion',
+                                'download' => 'https://wordpress.org/plugins/infinity-simple-faq/'
+                            ],
+                            [
+                                'name' => 'Infinity Testimonials',
+                                'download' => 'https://wordpress.org/plugins/infinity-testimonilas/'
+                            ],
+                            [
+                                'name' => 'Ultimate CF7 Integration with Analytics, Reports & Export',
+                                'download' => 'https://wordpress.org/plugins/nahian-ultimate-integration-for-contact-form-7-and-elementor/'
+                            ],
+                        ];
+
+                        foreach ($my_plugins as $plugin) {
+                            ?>
+                            <tr>
+                                <td><?php echo esc_html($plugin['name']); ?></td>
+                                <td>
+                                    <a href="<?php echo esc_url($plugin['download']); ?>" class="button button-secondary" target="_blank">
+                                        <?php esc_html_e('Download', 'bangladeshi-payments-mobile'); ?>
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
+
             </div>
+
             <div class="bpb-general-support">
                 <div class="payment-statistics">
                     <h4><?php echo esc_html('Payment Method Statistics', 'bangladeshi-payments-mobile') ?></h4>
@@ -76,12 +136,14 @@ function bangladeshi_payments_render_general_page() {
                             ?>
                         </tbody>
                     </table>
-                    <!-- Transaction Info Page Link in a Green Border Notice Box -->
+
+                    <!-- Transaction Info Page Link -->
                     <div class="notice transaction-info-notice">
                         <p><strong><?php echo esc_html('More Transaction Report', 'bangladeshi-payments-mobile') ?></strong> - <a href="<?php echo esc_url(admin_url('admin.php?page=bangladeshi-payments-transaction-info')); ?>"><?php echo esc_html('View Transaction Info', 'bangladeshi-payments-mobile') ?></a></p>
                     </div>
                 </div>
                 <br>
+
                 <div class="single-bpb-support">
                     <ul>
                         <li>

@@ -39,3 +39,20 @@
   position: absolute;
 }
 
+
+.payment-fields-box ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  margin: 10px 0 !important;
+}
+
+.payment-fields-box label {
+	display: block;
+}
+
+.payment-fields-box-qr img {
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	padding: 3px;
+}

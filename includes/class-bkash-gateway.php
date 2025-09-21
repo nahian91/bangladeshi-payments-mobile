@@ -92,35 +92,46 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
 
     public function payment_fields() {
     ?>
-        <?php 
-        // translators: %1$s is total amount, %2$s is bKash fees
-        printf(
-            '<p>%s</p>',
-            esc_html(sprintf(__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'), $this->calculate_total_payment(), $this->calculate_bkash_fees()))
-        );
-        ?>
+        <div class="payment-fields-box">
+            <div class="payment-fields-box-info">
+                <?php 
+                    printf(
+                        '<p>%s</p>',
+                        wp_kses_post(
+                            sprintf(
+                                __('You need to send us <strong>%1$s</strong> (Fees %2$s)', 'bangladeshi-payments-mobile'),
+                                $this->calculate_total_payment(),
+                                $this->calculate_bkash_fees()
+                            )
+                        )
+                    );
+                ?>
+            </div>
+            <div class="payment-fields-box-desc">
+                <?php echo esc_html($this->description); ?>
+            </div>
+            <ul>
+                <li><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html(ucfirst($this->account_type)); ?></span></li>
+                <li><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html($this->account_number); ?></span></li>
+            </ul>
+            <div class="payment-fields-box-phone">
+                <label for="bkash_phone"><?php esc_html_e('bKash Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
+                <input type="text" name="bkash_phone" id="bkash_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
+            </div>
 
-        <p><?php echo esc_html($this->description); ?></p>
-        <p><strong><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?></strong> <?php echo esc_html(ucfirst($this->account_type)); ?></p>
-        <p><strong><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?></strong> <?php echo esc_html($this->account_number); ?></p>
+            <div class="payment-fields-box-trans">
+                <label for="bkash_transaction_id"><?php esc_html_e('bKash Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
+                <input type="text" name="bkash_transaction_id" id="bkash_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
+            </div>
 
-        <div>
-            <label for="bkash_phone"><?php esc_html_e('bKash Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-            <input type="text" name="bkash_phone" id="bkash_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
+            <input type="hidden" name="bkash_nonce" value="<?php echo esc_attr(wp_create_nonce('bkash_payment_nonce')); ?>">
+
+            <?php if ($this->enable_qr): ?>
+                <div class="payment-fields-box-qr">
+                    <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="bKash QR Code">
+                </div>
+            <?php endif; ?>
         </div>
-
-        <div>
-            <label for="bkash_transaction_id"><?php esc_html_e('bKash Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-            <input type="text" name="bkash_transaction_id" id="bkash_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
-        </div>
-
-        <input type="hidden" name="bkash_nonce" value="<?php echo esc_attr(wp_create_nonce('bkash_payment_nonce')); ?>">
-
-        <?php if ($this->enable_qr): ?>
-            <p>
-                <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="bKash QR Code">
-            </p>
-        <?php endif; ?>
     <?php
     }
 

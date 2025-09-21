@@ -84,24 +84,40 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
         ];
     }
 
-    public function payment_fields() {
-        ?>
-        <p><?php printf(
-            esc_html__('You need to send us %1$s (Fees %2$s)', 'bangladeshi-payments-mobile'),
-            esc_html($this->calculate_total_payment()),
-            esc_html($this->calculate_rocket_fees())
-        ); ?></p>
+   public function payment_fields() {
+    ?>
+    <div class="payment-fields-box">
+        <div class="payment-fields-box-info">
+            <?php 
+            // translators: %1$s is total amount, %2$s is Rocket fee
+            printf(
+                '<p>%s</p>',
+                wp_kses_post(
+                    sprintf(
+                        __('You need to send us <strong>%1$s</strong> (Fees %2$s)', 'bangladeshi-payments-mobile'),
+                        $this->calculate_total_payment(),
+                        $this->calculate_rocket_fees()
+                    )
+                )
+            );
+            ?>
+        </div>
 
-        <p><?php echo esc_html($this->description); ?></p>
-        <p><strong><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?></strong> <?php echo esc_html(ucfirst($this->account_type)); ?></p>
-        <p><strong><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?></strong> <?php echo esc_html($this->account_number); ?></p>
+        <div class="payment-fields-box-desc">
+            <?php echo esc_html($this->description); ?>
+        </div>
 
-        <div>
+        <ul>
+                <li><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html(ucfirst($this->account_type)); ?></span></li>
+                <li><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html($this->account_number); ?></span></li>
+            </ul>
+
+        <div class="payment-fields-box-phone">
             <label for="rocket_phone"><?php esc_html_e('Rocket Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
             <input type="text" name="rocket_phone" id="rocket_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
         </div>
 
-        <div>
+        <div class="payment-fields-box-trans">
             <label for="rocket_transaction_id"><?php esc_html_e('Rocket Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
             <input type="text" name="rocket_transaction_id" id="rocket_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
         </div>
@@ -109,12 +125,14 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
         <input type="hidden" name="rocket_nonce" value="<?php echo esc_attr(wp_create_nonce('rocket_payment_nonce')); ?>">
 
         <?php if ($this->enable_qr): ?>
-            <p>
+            <div class="payment-fields-box-qr">
                 <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="Rocket QR Code">
-            </p>
+            </div>
         <?php endif; ?>
-        <?php
-    }
+    </div>
+    <?php
+}
+
 
     private function calculate_total_payment() {
         $total = WC()->cart->total;
