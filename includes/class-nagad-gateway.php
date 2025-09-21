@@ -1,7 +1,5 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) exit;
 
 class WC_Gateway_Nagad extends WC_Payment_Gateway {
 
@@ -29,10 +27,7 @@ class WC_Gateway_Nagad extends WC_Payment_Gateway {
         $this->apply_nagad_charge = $this->get_option('apply_nagad_charge') === 'yes';
         $this->enable_qr          = $this->get_option('enable_qr') === 'yes';
 
-        // Save settings
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, [$this, 'process_admin_options']);
-
-        // Show payment info in admin order (once)
         add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'display_admin_order_info'], 10, 1);
     }
 
@@ -57,7 +52,10 @@ class WC_Gateway_Nagad extends WC_Payment_Gateway {
             'account_type' => [
                 'title'   => __('Account Type', 'bangladeshi-payments-mobile'),
                 'type'    => 'select',
-                'options' => ['personal' => __('Personal', 'bangladeshi-payments-mobile'), 'agent' => __('Agent', 'bangladeshi-payments-mobile')],
+                'options' => [
+                    'personal' => __('Personal', 'bangladeshi-payments-mobile'),
+                    'agent'    => __('Agent', 'bangladeshi-payments-mobile'),
+                ],
                 'default' => 'personal',
             ],
             'account_number' => [
@@ -88,53 +86,51 @@ class WC_Gateway_Nagad extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
-    ?>
-    <div class="payment-fields-box">
-        <div class="payment-fields-box-info">
-            <?php 
-            // translators: %1$s is total amount, %2$s is Nagad fee
-            printf(
-                '<p>%s</p>',
-                wp_kses_post(
-                    sprintf(
+        ?>
+        <div class="payment-fields-box">
+            <div class="payment-fields-box-info">
+                <?php 
+                // translators: %1$s is total amount, %2$s is Nagad fee
+                printf(
+                    '<p>%s</p>',
+                    wp_kses_post(sprintf(
                         __('You need to send us <strong>%1$s</strong> (Fees %2$s)', 'bangladeshi-payments-mobile'),
                         $this->calculate_total_payment(),
                         $this->calculate_nagad_fees()
-                    )
-                )
-            );
-            ?>
-        </div>
+                    ))
+                );
+                ?>
+            </div>
 
-        <div class="payment-fields-box-desc">
-            <?php echo esc_html($this->description); ?>
-        </div>
+            <div class="payment-fields-box-desc">
+                <?php echo esc_html($this->description); ?>
+            </div>
 
-        <ul>
+            <ul>
                 <li><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html(ucfirst($this->account_type)); ?></span></li>
                 <li><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html($this->account_number); ?></span></li>
             </ul>
 
-        <div class="payment-fields-box-phone">
-            <label for="nagad_phone"><?php esc_html_e('Nagad Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-            <input type="text" name="nagad_phone" id="nagad_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
-        </div>
-
-        <div class="payment-fields-box-trans">
-            <label for="nagad_transaction_id"><?php esc_html_e('Nagad Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-            <input type="text" name="nagad_transaction_id" id="nagad_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
-        </div>
-
-        <input type="hidden" name="nagad_nonce" value="<?php echo esc_attr(wp_create_nonce('nagad_payment_nonce')); ?>">
-
-        <?php if ($this->enable_qr): ?>
-            <div class="payment-fields-box-qr">
-                <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="Nagad QR Code">
+            <div class="payment-fields-box-phone">
+                <label for="nagad_phone"><?php esc_html_e('Nagad Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
+                <input type="text" name="nagad_phone" id="nagad_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
             </div>
-        <?php endif; ?>
-    </div>
-    <?php
-}
+
+            <div class="payment-fields-box-trans">
+                <label for="nagad_transaction_id"><?php esc_html_e('Nagad Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
+                <input type="text" name="nagad_transaction_id" id="nagad_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
+            </div>
+
+            <input type="hidden" name="nagad_nonce" value="<?php echo esc_attr(wp_create_nonce('nagad_payment_nonce')); ?>">
+
+            <?php if ($this->enable_qr): ?>
+                <div class="payment-fields-box-qr">
+                    <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="Nagad QR Code">
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
 
     private function calculate_total_payment() {
         $total = WC()->cart->total;
@@ -154,12 +150,15 @@ class WC_Gateway_Nagad extends WC_Payment_Gateway {
             return false;
         }
 
-        if (empty($_POST['nagad_phone']) || !preg_match('/^01[0-9]{9}$/', sanitize_text_field(wp_unslash($_POST['nagad_phone'])))) {
+        $phone = isset($_POST['nagad_phone']) ? sanitize_text_field(wp_unslash($_POST['nagad_phone'])) : '';
+        $trx   = isset($_POST['nagad_transaction_id']) ? sanitize_text_field(wp_unslash($_POST['nagad_transaction_id'])) : '';
+
+        if (empty($phone) || !preg_match('/^01[0-9]{9}$/', $phone)) {
             wc_add_notice(__('Please enter a valid Nagad phone number.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
 
-        if (empty($_POST['nagad_transaction_id'])) {
+        if (empty($trx)) {
             wc_add_notice(__('Nagad transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
@@ -170,9 +169,13 @@ class WC_Gateway_Nagad extends WC_Payment_Gateway {
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
 
-        update_post_meta($order_id, '_nagad_phone', sanitize_text_field(wp_unslash($_POST['nagad_phone'])));
-        update_post_meta($order_id, '_nagad_transaction_id', sanitize_text_field(wp_unslash($_POST['nagad_transaction_id'])));
+        $phone = isset($_POST['nagad_phone']) ? sanitize_text_field(wp_unslash($_POST['nagad_phone'])) : '';
+        $trx   = isset($_POST['nagad_transaction_id']) ? sanitize_text_field(wp_unslash($_POST['nagad_transaction_id'])) : '';
 
+        if ($phone) update_post_meta($order_id, '_nagad_phone', $phone);
+        if ($trx)   update_post_meta($order_id, '_nagad_transaction_id', $trx);
+
+        // translators: Message shown to user after order is placed
         $order->update_status('on-hold', __('Waiting for Nagad payment confirmation.', 'bangladeshi-payments-mobile'));
         wc_reduce_stock_levels($order_id);
         WC()->cart->empty_cart();
@@ -183,34 +186,22 @@ class WC_Gateway_Nagad extends WC_Payment_Gateway {
         ];
     }
 
-    // Display admin info once
     public function display_admin_order_info($order) {
-        static $displayed = false; // prevent duplicate display
+        static $displayed = false;
         if ($displayed) return;
         $displayed = true;
 
         $phone = get_post_meta($order->get_id(), '_nagad_phone', true);
         $trx   = get_post_meta($order->get_id(), '_nagad_transaction_id', true);
 
-        if ($phone || $trx) :
+        if ($phone || $trx):
         ?>
             <div class="payment-order-page">
                 <table>
-                    <tr>
-                        <td colspan="2"><h4><?php esc_html_e('Nagad Payment Information', 'bangladeshi-payments-mobile'); ?></h4></td>
-                    </tr>
-                    <tr>
-                        <td><?php esc_html_e('Payment Method:', 'bangladeshi-payments-mobile'); ?></td>
-                        <td><?php esc_html_e('Nagad', 'bangladeshi-payments-mobile'); ?></td>
-                    </tr>
-                    <tr>
-                        <td><?php esc_html_e('Phone Number:', 'bangladeshi-payments-mobile'); ?></td>
-                        <td><?php echo esc_html($phone); ?></td>
-                    </tr>
-                    <tr>
-                        <td><?php esc_html_e('Transaction ID:', 'bangladeshi-payments-mobile'); ?></td>
-                        <td><?php echo esc_html($trx); ?></td>
-                    </tr>
+                    <tr><td colspan="2"><h4><?php esc_html_e('Nagad Payment Information', 'bangladeshi-payments-mobile'); ?></h4></td></tr>
+                    <tr><td><?php esc_html_e('Payment Method:', 'bangladeshi-payments-mobile'); ?></td><td><?php esc_html_e('Nagad', 'bangladeshi-payments-mobile'); ?></td></tr>
+                    <tr><td><?php esc_html_e('Phone Number:', 'bangladeshi-payments-mobile'); ?></td><td><?php echo esc_html($phone); ?></td></tr>
+                    <tr><td><?php esc_html_e('Transaction ID:', 'bangladeshi-payments-mobile'); ?></td><td><?php echo esc_html($trx); ?></td></tr>
                 </table>
             </div>
         <?php

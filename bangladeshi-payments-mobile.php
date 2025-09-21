@@ -148,4 +148,3 @@ function bpm_admin_assets($hook) {
         'nonce'    => wp_create_nonce('bpm_admin_nonce')
     ));
 }
-

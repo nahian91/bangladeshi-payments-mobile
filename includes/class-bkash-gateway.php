@@ -55,13 +55,13 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
                 'default'     => __('Pay with bKash. Enter your bKash phone number and transaction ID.', 'bangladeshi-payments-mobile'),
             ],
             'account_type' => [
-                'title'       => __('Account Type', 'bangladeshi-payments-mobile'),
-                'type'        => 'select',
-                'options'     => [
+                'title'   => __('Account Type', 'bangladeshi-payments-mobile'),
+                'type'    => 'select',
+                'options' => [
                     'personal' => __('Personal', 'bangladeshi-payments-mobile'),
                     'agent'    => __('Agent', 'bangladeshi-payments-mobile'),
                 ],
-                'default'     => 'personal',
+                'default' => 'personal',
             ],
             'account_number' => [
                 'title'    => __('Account Number', 'bangladeshi-payments-mobile'),
@@ -91,58 +91,64 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
-    ?>
+        $total_amount = $this->calculate_total_payment();
+        $fee_amount   = $this->calculate_bkash_fees();
+        ?>
         <div class="payment-fields-box">
             <div class="payment-fields-box-info">
                 <?php 
+                    // translators: %1$s = total payment amount, %2$s = bKash fee amount
                     printf(
                         '<p>%s</p>',
                         wp_kses_post(
                             sprintf(
                                 __('You need to send us <strong>%1$s</strong> (Fees %2$s)', 'bangladeshi-payments-mobile'),
-                                $this->calculate_total_payment(),
-                                $this->calculate_bkash_fees()
+                                esc_html($total_amount),
+                                esc_html($fee_amount)
                             )
                         )
                     );
                 ?>
             </div>
+
             <div class="payment-fields-box-desc">
                 <?php echo esc_html($this->description); ?>
             </div>
+
             <ul>
                 <li><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html(ucfirst($this->account_type)); ?></span></li>
                 <li><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html($this->account_number); ?></span></li>
             </ul>
+
             <div class="payment-fields-box-phone">
                 <label for="bkash_phone"><?php esc_html_e('bKash Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-                <input type="text" name="bkash_phone" id="bkash_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
+                <input type="text" name="bkash_phone" id="bkash_phone" placeholder="<?php echo esc_attr__('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
             </div>
 
             <div class="payment-fields-box-trans">
                 <label for="bkash_transaction_id"><?php esc_html_e('bKash Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-                <input type="text" name="bkash_transaction_id" id="bkash_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
+                <input type="text" name="bkash_transaction_id" id="bkash_transaction_id" placeholder="<?php echo esc_attr__('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
             </div>
 
             <input type="hidden" name="bkash_nonce" value="<?php echo esc_attr(wp_create_nonce('bkash_payment_nonce')); ?>">
 
             <?php if ($this->enable_qr): ?>
                 <div class="payment-fields-box-qr">
-                    <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="bKash QR Code">
+                    <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="<?php esc_attr_e('bKash QR Code', 'bangladeshi-payments-mobile'); ?>">
                 </div>
             <?php endif; ?>
         </div>
-    <?php
+        <?php
     }
 
     private function calculate_total_payment() {
-        $total = WC()->cart->total;
+        $total = WC()->cart ? WC()->cart->total : 0;
         $fee   = $this->apply_bkash_charge ? ($total * ($this->bkash_charge / 100)) : 0;
         return number_format($total + $fee, 2) . ' BDT';
     }
 
     private function calculate_bkash_fees() {
-        $total = WC()->cart->total;
+        $total = WC()->cart ? WC()->cart->total : 0;
         $fee   = $this->apply_bkash_charge ? ($total * ($this->bkash_charge / 100)) : 0;
         return number_format($fee, 2) . ' BDT';
     }
@@ -170,35 +176,31 @@ class WC_Gateway_bKash extends WC_Payment_Gateway {
     }
 
     public function process_payment($order_id) {
-    $order = wc_get_order($order_id);
+        $order = wc_get_order($order_id);
 
-    // Verify nonce before processing POST data
-    if ( ! isset( $_POST['bkash_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['bkash_nonce'] ) ), 'bkash_payment_nonce' ) ) {
-        wc_add_notice( __( 'Nonce verification failed.', 'bangladeshi-payments-mobile' ), 'error' );
+        // Nonce verification
+        if (!isset($_POST['bkash_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['bkash_nonce'])), 'bkash_payment_nonce')) {
+            wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
+            return ['result' => 'fail', 'redirect' => ''];
+        }
+
+        $bkash_phone = isset($_POST['bkash_phone']) ? sanitize_text_field(wp_unslash($_POST['bkash_phone'])) : '';
+        $bkash_trx   = isset($_POST['bkash_transaction_id']) ? sanitize_text_field(wp_unslash($_POST['bkash_transaction_id'])) : '';
+
+        if ($bkash_phone) update_post_meta($order_id, '_bkash_phone', $bkash_phone);
+        if ($bkash_trx) update_post_meta($order_id, '_bkash_transaction_id', $bkash_trx);
+
+        // translators: Message shown to the user after order is placed, waiting for bKash confirmation.
+        $order->update_status('on-hold', __('Waiting for bKash payment confirmation.', 'bangladeshi-payments-mobile'));
+
+        wc_reduce_stock_levels($order_id);
+        WC()->cart->empty_cart();
+
         return [
-            'result'   => 'fail',
-            'redirect' => '',
+            'result'   => 'success',
+            'redirect' => $this->get_return_url($order),
         ];
     }
-
-    $bkash_phone = isset($_POST['bkash_phone']) ? sanitize_text_field(wp_unslash($_POST['bkash_phone'])) : '';
-    $bkash_trx   = isset($_POST['bkash_transaction_id']) ? sanitize_text_field(wp_unslash($_POST['bkash_transaction_id'])) : '';
-
-    if ($bkash_phone) update_post_meta($order_id, '_bkash_phone', $bkash_phone);
-    if ($bkash_trx) update_post_meta($order_id, '_bkash_transaction_id', $bkash_trx);
-
-    // translators: Message shown to the user after order is placed, waiting for bKash confirmation.
-    $order->update_status('on-hold', __('Waiting for bKash payment confirmation.', 'bangladeshi-payments-mobile'));
-
-    wc_reduce_stock_levels($order_id);
-    WC()->cart->empty_cart();
-
-    return [
-        'result'   => 'success',
-        'redirect' => $this->get_return_url($order),
-    ];
-}
-
 }
 
 // Admin display of bKash info
@@ -210,7 +212,7 @@ add_action('woocommerce_admin_order_data_after_billing_address', function($order
     ?>
         <div class="payment-order-page">
             <table>
-                <tr><td colspan="2"><h4><?php esc_html_e('Payment Information', 'bangladeshi-payments-mobile'); ?></h4></td></tr>
+                <tr><td colspan="2"><h4><?php esc_html_e('bKash Payment Information', 'bangladeshi-payments-mobile'); ?></h4></td></tr>
                 <tr><td><?php esc_html_e('Payment Method:', 'bangladeshi-payments-mobile'); ?></td><td><?php esc_html_e('bKash', 'bangladeshi-payments-mobile'); ?></td></tr>
                 <tr><td><?php esc_html_e('Phone Number:', 'bangladeshi-payments-mobile'); ?></td><td><?php echo esc_html($bkash_phone); ?></td></tr>
                 <tr><td><?php esc_html_e('Transaction ID:', 'bangladeshi-payments-mobile'); ?></td><td><?php echo esc_html($bkash_trx); ?></td></tr>

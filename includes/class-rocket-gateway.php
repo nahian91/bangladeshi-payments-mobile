@@ -1,7 +1,5 @@
 <?php
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) exit;
 
 class WC_Gateway_Rocket extends WC_Payment_Gateway {
 
@@ -54,7 +52,10 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
             'account_type' => [
                 'title'   => __('Account Type', 'bangladeshi-payments-mobile'),
                 'type'    => 'select',
-                'options' => ['personal' => __('Personal', 'bangladeshi-payments-mobile'), 'agent' => __('Agent', 'bangladeshi-payments-mobile')],
+                'options' => [
+                    'personal' => __('Personal', 'bangladeshi-payments-mobile'),
+                    'agent'    => __('Agent', 'bangladeshi-payments-mobile'),
+                ],
                 'default' => 'personal',
             ],
             'account_number' => [
@@ -84,55 +85,52 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
         ];
     }
 
-   public function payment_fields() {
-    ?>
-    <div class="payment-fields-box">
-        <div class="payment-fields-box-info">
-            <?php 
-            // translators: %1$s is total amount, %2$s is Rocket fee
-            printf(
-                '<p>%s</p>',
-                wp_kses_post(
-                    sprintf(
+    public function payment_fields() {
+        ?>
+        <div class="payment-fields-box">
+            <div class="payment-fields-box-info">
+                <?php 
+                // translators: %1$s is total amount, %2$s is Rocket fee
+                printf(
+                    '<p>%s</p>',
+                    wp_kses_post(sprintf(
                         __('You need to send us <strong>%1$s</strong> (Fees %2$s)', 'bangladeshi-payments-mobile'),
                         $this->calculate_total_payment(),
                         $this->calculate_rocket_fees()
-                    )
-                )
-            );
-            ?>
-        </div>
+                    ))
+                );
+                ?>
+            </div>
 
-        <div class="payment-fields-box-desc">
-            <?php echo esc_html($this->description); ?>
-        </div>
+            <div class="payment-fields-box-desc">
+                <?php echo esc_html($this->description); ?>
+            </div>
 
-        <ul>
+            <ul>
                 <li><?php esc_html_e('Account Type:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html(ucfirst($this->account_type)); ?></span></li>
                 <li><?php esc_html_e('Account Number:', 'bangladeshi-payments-mobile'); ?> <span><?php echo esc_html($this->account_number); ?></span></li>
             </ul>
 
-        <div class="payment-fields-box-phone">
-            <label for="rocket_phone"><?php esc_html_e('Rocket Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-            <input type="text" name="rocket_phone" id="rocket_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
-        </div>
-
-        <div class="payment-fields-box-trans">
-            <label for="rocket_transaction_id"><?php esc_html_e('Rocket Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
-            <input type="text" name="rocket_transaction_id" id="rocket_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
-        </div>
-
-        <input type="hidden" name="rocket_nonce" value="<?php echo esc_attr(wp_create_nonce('rocket_payment_nonce')); ?>">
-
-        <?php if ($this->enable_qr): ?>
-            <div class="payment-fields-box-qr">
-                <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="Rocket QR Code">
+            <div class="payment-fields-box-phone">
+                <label for="rocket_phone"><?php esc_html_e('Rocket Phone Number', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
+                <input type="text" name="rocket_phone" id="rocket_phone" placeholder="<?php esc_attr_e('01XXXXXXXXX', 'bangladeshi-payments-mobile'); ?>" required>
             </div>
-        <?php endif; ?>
-    </div>
-    <?php
-}
 
+            <div class="payment-fields-box-trans">
+                <label for="rocket_transaction_id"><?php esc_html_e('Rocket Transaction ID', 'bangladeshi-payments-mobile'); ?> <span class="required">*</span></label>
+                <input type="text" name="rocket_transaction_id" id="rocket_transaction_id" placeholder="<?php esc_attr_e('Transaction ID', 'bangladeshi-payments-mobile'); ?>" required>
+            </div>
+
+            <input type="hidden" name="rocket_nonce" value="<?php echo esc_attr(wp_create_nonce('rocket_payment_nonce')); ?>">
+
+            <?php if ($this->enable_qr): ?>
+                <div class="payment-fields-box-qr">
+                    <img src="<?php echo esc_url('https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($this->account_number) . '&size=80x80'); ?>" alt="Rocket QR Code">
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
 
     private function calculate_total_payment() {
         $total = WC()->cart->total;
@@ -147,17 +145,20 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
     }
 
     public function validate_fields() {
+        $phone = isset($_POST['rocket_phone']) ? sanitize_text_field(wp_unslash($_POST['rocket_phone'])) : '';
+        $trx   = isset($_POST['rocket_transaction_id']) ? sanitize_text_field(wp_unslash($_POST['rocket_transaction_id'])) : '';
+
         if (!isset($_POST['rocket_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['rocket_nonce'])), 'rocket_payment_nonce')) {
             wc_add_notice(__('Nonce verification failed.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
 
-        if (empty($_POST['rocket_phone']) || !preg_match('/^01[0-9]{9}$/', sanitize_text_field(wp_unslash($_POST['rocket_phone'])))) {
+        if (empty($phone) || !preg_match('/^01[0-9]{9}$/', $phone)) {
             wc_add_notice(__('Please enter a valid Rocket phone number.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
 
-        if (empty($_POST['rocket_transaction_id'])) {
+        if (empty($trx)) {
             wc_add_notice(__('Rocket transaction ID is required.', 'bangladeshi-payments-mobile'), 'error');
             return false;
         }
@@ -168,8 +169,11 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
 
-        update_post_meta($order_id, '_rocket_phone', sanitize_text_field(wp_unslash($_POST['rocket_phone'])));
-        update_post_meta($order_id, '_rocket_transaction_id', sanitize_text_field(wp_unslash($_POST['rocket_transaction_id'])));
+        $phone = isset($_POST['rocket_phone']) ? sanitize_text_field(wp_unslash($_POST['rocket_phone'])) : '';
+        $trx   = isset($_POST['rocket_transaction_id']) ? sanitize_text_field(wp_unslash($_POST['rocket_transaction_id'])) : '';
+
+        if ($phone) update_post_meta($order_id, '_rocket_phone', $phone);
+        if ($trx)   update_post_meta($order_id, '_rocket_transaction_id', $trx);
 
         $order->update_status('on-hold', __('Waiting for Rocket payment confirmation.', 'bangladeshi-payments-mobile'));
         wc_reduce_stock_levels($order_id);
@@ -182,32 +186,21 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
     }
 
     public function display_admin_order_info($order) {
-        static $displayed = false; // prevent duplicate display
+        static $displayed = false;
         if ($displayed) return;
         $displayed = true;
 
         $phone = get_post_meta($order->get_id(), '_rocket_phone', true);
         $trx   = get_post_meta($order->get_id(), '_rocket_transaction_id', true);
 
-        if ($phone || $trx) :
+        if ($phone || $trx):
         ?>
             <div class="payment-order-page">
                 <table>
-                    <tr>
-                        <td colspan="2"><h4><?php esc_html_e('Rocket Payment Information', 'bangladeshi-payments-mobile'); ?></h4></td>
-                    </tr>
-                    <tr>
-                        <td><?php esc_html_e('Payment Method:', 'bangladeshi-payments-mobile'); ?></td>
-                        <td><?php esc_html_e('Rocket', 'bangladeshi-payments-mobile'); ?></td>
-                    </tr>
-                    <tr>
-                        <td><?php esc_html_e('Phone Number:', 'bangladeshi-payments-mobile'); ?></td>
-                        <td><?php echo esc_html($phone); ?></td>
-                    </tr>
-                    <tr>
-                        <td><?php esc_html_e('Transaction ID:', 'bangladeshi-payments-mobile'); ?></td>
-                        <td><?php echo esc_html($trx); ?></td>
-                    </tr>
+                    <tr><td colspan="2"><h4><?php esc_html_e('Rocket Payment Information', 'bangladeshi-payments-mobile'); ?></h4></td></tr>
+                    <tr><td><?php esc_html_e('Payment Method:', 'bangladeshi-payments-mobile'); ?></td><td><?php esc_html_e('Rocket', 'bangladeshi-payments-mobile'); ?></td></tr>
+                    <tr><td><?php esc_html_e('Phone Number:', 'bangladeshi-payments-mobile'); ?></td><td><?php echo esc_html($phone); ?></td></tr>
+                    <tr><td><?php esc_html_e('Transaction ID:', 'bangladeshi-payments-mobile'); ?></td><td><?php echo esc_html($trx); ?></td></tr>
                 </table>
             </div>
         <?php
@@ -215,7 +208,6 @@ class WC_Gateway_Rocket extends WC_Payment_Gateway {
     }
 }
 
-// Register Rocket gateway
 add_filter('woocommerce_payment_gateways', function($methods) {
     $methods[] = 'WC_Gateway_Rocket';
     return $methods;
