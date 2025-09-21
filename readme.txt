@@ -1,4 +1,4 @@
-=== Bangladeshi Payments Mobile ===
+=== Bangladeshi Payments Mobile – QR Code & Transaction Reports – QR Code & Transaction Reports ===
 Contributors: nahian91
 Donate link: https://devnahian.com
 Tags: WooCommerce, bKash, Nagad, Rocket, Bangladesh
@@ -9,10 +9,10 @@ Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Bangladeshi Payments Mobile is a custom WooCommerce payment gateway plugin for integrating bKash, Nagad, Rocket, and Upay in Bangladesh.
+Bangladeshi Payments Mobile – QR Code & Transaction Reports is a custom WooCommerce payment gateway plugin for integrating bKash, Nagad, Rocket, and Upay in Bangladesh.
 
 == Description ==
-**Bangladeshi Payments Mobile** is a WooCommerce payment gateway plugin that integrates the most popular mobile payment services in Bangladesh, including **bKash, Nagad, Rocket, and Upay**. It allows customers to securely and efficiently make payments using their mobile accounts. Merchants benefit from a user-friendly interface, simple setup, and reliable payment processing.
+**Bangladeshi Payments Mobile – QR Code & Transaction Reports** is a WooCommerce payment gateway plugin that integrates the most popular mobile payment services in Bangladesh, including **bKash, Nagad, Rocket, and Upay**. It allows customers to securely and efficiently make payments using their mobile accounts. Merchants benefit from a user-friendly interface, simple setup, and reliable payment processing.
 
 ### Key Features
 - **Secure Integration**: Supports **bKash, Nagad, Rocket, and Upay** for secure mobile transactions.
@@ -43,11 +43,11 @@ For more plugins and tutorials, visit my website: [https://devnahian.com](https:
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/bangladeshi-payments-mobile/` directory or install it directly from the WordPress plugin screen.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Go to **WooCommerce > Settings > Payments**, and enable **Bangladeshi Payments Mobile**.
+3. Go to **WooCommerce > Settings > Payments**, and enable **Bangladeshi Payments Mobile – QR Code & Transaction Reports**.
 4. Configure the plugin settings with your **bKash**, **Nagad**, **Rocket**, or **Upay** account details.
 
 == Frequently Asked Questions ==
-= What payment methods does Bangladeshi Payments Mobile support? =
+= What payment methods does Bangladeshi Payments Mobile – QR Code & Transaction Reports support? =
 The plugin supports **bKash**, **Nagad**, **Rocket**, and **Upay**, popular mobile payment services in Bangladesh.
 
 = Do I need accounts with these payment providers to use the plugin? =
@@ -59,7 +59,7 @@ Yes, customers can choose their preferred provider (bKash, Nagad, Rocket, or Upa
 = Does the plugin calculate transaction fees? =
 Yes, the plugin can calculate transaction charges during checkout based on the selected payment method.
 
-= How do I configure Bangladeshi Payments Mobile? =
+= How do I configure Bangladeshi Payments Mobile – QR Code & Transaction Reports? =
 After activating the plugin, go to **WooCommerce > Settings > Payments** and configure your payment options.
 
 = Is this plugin secure for processing mobile payments? =
@@ -81,11 +81,11 @@ Currently, the plugin does not support WooCommerce Subscriptions or Pre-orders. 
 
 == Changelog ==
 = 1.0.0 =
-* Initial release of **Bangladeshi Payments Mobile**.
+* Initial release of **Bangladeshi Payments Mobile – QR Code & Transaction Reports**.
 
 == Upgrade Notice ==
 = 1.0.0 =
-Initial release of **Bangladeshi Payments Mobile**.
+Initial release of **Bangladeshi Payments Mobile – QR Code & Transaction Reports**.
 
 == License ==
 This plugin is licensed under the GPLv2 or later. For more details, see [License URI](https://www.gnu.org/licenses/gpl-2.0.html).

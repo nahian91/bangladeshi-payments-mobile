@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Bangladeshi Payments Mobile
+ * Plugin Name: Bangladeshi Payments Mobile – QR Code & Transaction Reports
  * Plugin URI: https://devnahian.com/bangladeshi-payments-mobile/
  * Description: Bangladeshi Payments Mobile is a WooCommerce payment gateway that enables seamless mobile payments with bKash, Nagad, Rocket, and Upay for online stores.
  * Version: 1.4
