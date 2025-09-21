@@ -16,13 +16,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Freemius SDK
 if (!function_exists('bpm_fs')) {
-    // Create a helper function for easy SDK access.
     function bpm_fs() {
         global $bpm_fs;
 
         if (!isset($bpm_fs)) {
-            // Include Freemius SDK.
             require_once dirname(__FILE__) . '/freemius/start.php';
 
             $bpm_fs = fs_dynamic_init(array(
@@ -44,52 +43,39 @@ if (!function_exists('bpm_fs')) {
         return $bpm_fs;
     }
 
-    // Init Freemius.
     bpm_fs();
-    // Signal that SDK was initiated.
     do_action('bpm_fs_loaded');
 }
 
-/**
- * Plugin activation hook
- * Prevents activation if WooCommerce is not active
- */
+// Plugin activation check for WooCommerce
 register_activation_hook(__FILE__, 'bangladeshi_payments_mobile_activate');
-
 function bangladeshi_payments_mobile_activate() {
-    // Check if WooCommerce is active
     if (!is_plugin_active('woocommerce/woocommerce.php')) {
-        // Stop plugin activation and show an error message on the same page
         wp_die(
             __('This plugin requires WooCommerce to be installed and activated. Please install and activate WooCommerce first.', 'bangladeshi-payments-mobile'),
             __('Plugin Activation Error', 'bangladeshi-payments-mobile'),
-            array('back_link' => true)  // Include a back link to go back to the plugins page
+            array('back_link' => true)
         );
     }
 }
 
-/**
- * Add Settings link on the plugin page
- */
+// Add Settings link on plugin page
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'bangladeshi_payments_mobile_settings_link');
-
 function bangladeshi_payments_mobile_settings_link($links) {
     $settings_link = '<a href="' . admin_url('admin.php?page=bangladeshi-payments-mobile') . '">Settings</a>';
     array_unshift($links, $settings_link);
     return $links;
 }
 
-// Ensure WooCommerce is active before initializing the plugin
+// Ensure WooCommerce is active before loading plugin
 add_action('plugins_loaded', 'bangladeshi_payments_check_woocommerce', 15);
-
 function bangladeshi_payments_check_woocommerce() {
     if (!class_exists('WC_Payment_Gateway')) {
-        // WooCommerce is not active, show an admin notice
         add_action('admin_notices', 'bangladeshi_payments_woocommerce_missing_notice');
         return;
     }
 
-    // Load payment gateway classes
+    // Load gateway classes
     require_once plugin_dir_path(__FILE__) . 'includes/class-bkash-gateway.php';
     require_once plugin_dir_path(__FILE__) . 'includes/class-nagad-gateway.php';
     require_once plugin_dir_path(__FILE__) . 'includes/class-rocket-gateway.php';
@@ -97,54 +83,68 @@ function bangladeshi_payments_check_woocommerce() {
     require_once plugin_dir_path(__FILE__) . 'admin/bpm-assets.php';
     require_once plugin_dir_path(__FILE__) . 'admin/bpm-menu.php';
 
-    // Add the gateway to WooCommerce
+    // Add gateways to WooCommerce
     add_filter('woocommerce_payment_gateways', 'bangladeshi_payments_add_gateway_class');
 
-    // Add an admin menu page for transaction info
+    // Admin menu & WooCommerce orders customization
     add_action('admin_menu', 'bangladeshi_payments_add_admin_menu');
-
-    // Add a custom column to the WooCommerce Orders page
     add_filter('manage_edit-shop_order_columns', 'add_custom_order_column');
     add_action('manage_shop_order_posts_custom_column', 'custom_order_column_content', 10, 2);
     add_filter('manage_edit-shop_order_sortable_columns', 'make_custom_order_column_sortable');
 }
 
-// Show an admin notice if WooCommerce is not installed or activated
+// WooCommerce missing notice
 function bangladeshi_payments_woocommerce_missing_notice() {
-    // Check if WooCommerce is not active
-    if (!is_plugin_active('woocommerce/woocommerce.php')) {
-        // The URL for WooCommerce installation page
-        $woo_install_url = admin_url('plugin-install.php?tab=search&s=woocommerce');
-
-        // Admin notice HTML
-        echo '<div class="error" id="bpm-woocommerce-notice" style="padding: 15px; background-color: #f8d7da; border-left: 4px solid #f5c6cb; border-radius: 5px; color: #721c24;">
-            <p style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">' . 
-            esc_html__('Bangladeshi Payments Mobile requires WooCommerce to be installed and active.', 'bangladeshi-payments-mobile') . '</p>
-            <p style="font-size: 14px; margin: 0;">' . 
-            esc_html__('Please install and activate WooCommerce to use the Bangladeshi Payments Mobile plugin.', 'bangladeshi-payments-mobile') . '</p>
-            <p id="bpm-install-message" style="margin-top: 10px; font-size: 14px;">
-                <a href="' . esc_url($woo_install_url) . '" target="_blank" class="button-primary" style="background-color: #0073aa; color: #fff; padding: 8px 12px; border-radius: 3px; text-decoration: none;">
-                    ' . esc_html__('Install WooCommerce Now', 'bangladeshi-payments-mobile') . '
-                </a>
-            </p>
-        </div>';
-    }
+    $woo_install_url = admin_url('plugin-install.php?tab=search&s=woocommerce');
+    echo '<div class="error" style="padding:15px; background-color:#f8d7da; border-left:4px solid #f5c6cb; border-radius:5px; color:#721c24;">
+        <p><strong>' . esc_html__('Bangladeshi Payments Mobile requires WooCommerce to be installed and active.', 'bangladeshi-payments-mobile') . '</strong></p>
+        <p>' . esc_html__('Please install and activate WooCommerce to use the plugin.', 'bangladeshi-payments-mobile') . '</p>
+        <p><a href="' . esc_url($woo_install_url) . '" target="_blank" class="button-primary">' . esc_html__('Install WooCommerce Now', 'bangladeshi-payments-mobile') . '</a></p>
+    </div>';
 }
 add_action('admin_notices', 'bangladeshi_payments_woocommerce_missing_notice');
-
-// Check if WooCommerce is active, hide notice if true
-function hide_woocommerce_missing_notice() {
+add_action('admin_init', function() {
     if (is_plugin_active('woocommerce/woocommerce.php')) {
         remove_action('admin_notices', 'bangladeshi_payments_woocommerce_missing_notice');
     }
-}
-add_action('admin_init', 'hide_woocommerce_missing_notice');
+});
 
-// Add the payment gateway to WooCommerce
+// Add gateways to WooCommerce
 function bangladeshi_payments_add_gateway_class($gateways) {
     $gateways[] = 'WC_Gateway_bKash';
     $gateways[] = 'WC_Gateway_Nagad';
     $gateways[] = 'WC_Gateway_Rocket';
     $gateways[] = 'WC_Gateway_Upay';
     return $gateways;
+}
+
+/**
+ * Enqueue admin CSS and JS
+ */
+add_action('admin_enqueue_scripts', 'bpm_admin_assets');
+function bpm_admin_assets($hook) {
+
+    // Admin CSS
+    wp_enqueue_style(
+        'bpm-admin-css',
+        plugin_dir_url(__FILE__) . 'admin/assets/css/jquery.dataTables.min.css',
+        array(),
+        '1.0.0',
+        'all'
+    );
+
+    // Admin JS
+    wp_enqueue_script(
+        'bpm-admin-js',
+        plugin_dir_url(__FILE__) . 'admin/assets/js/jquery.dataTables.min.js',
+        array('jquery'),
+        '1.0.0',
+        true
+    );
+
+    // Pass variables to JS
+    wp_localize_script('bpm-admin-js', 'bpm_admin_vars', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce'    => wp_create_nonce('bpm_admin_nonce')
+    ));
 }

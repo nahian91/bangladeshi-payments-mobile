@@ -4,8 +4,6 @@ function bangladeshi_payments_render_transaction_info_page() {
     // Enqueue DataTables
     add_action('admin_footer', function() {
         ?>
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         <script>
             jQuery(document).ready(function($){
                 $('.bpm-transactions-table').DataTable({
